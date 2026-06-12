@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 微服务系统架构</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#020617;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'JetBrains Mono',monospace;overflow-x:hidden}
+svg{display:block;max-width:100%;height:auto}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 1200 1120" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono',monospace">
+  <defs>
+    <!-- Background grid -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+    </pattern>
+
+    <!-- Arrow markers -->
+    <marker id="arrow-solid" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 9 5 L 0 9 Z" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrow-rose" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 9 5 L 0 9 Z" fill="#f43f5e"/>
+    </marker>
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 9 5 L 0 9 Z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 9 5 L 0 9 Z" fill="#34d399"/>
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 9 5 L 0 9 Z" fill="#a78bfa"/>
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1 L 9 5 L 0 9 Z" fill="#fbbf24"/>
+    </marker>
+
+    <!-- Filter for subtle glow -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- Drop shadow for components -->
+    <filter id="shadow" x="-5%" y="-5%" width="115%" height="115%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- === BACKGROUND === -->
+  <rect width="1200" height="1120" fill="#020617"/>
+  <rect width="1200" height="1120" fill="url(#grid)"/>
+
+  <!-- === TITLE === -->
+  <text x="600" y="48" text-anchor="middle" fill="#f1f5f9" font-size="22" font-weight="700" letter-spacing="1">AI 微服务系统架构</text>
+  <text x="600" y="70" text-anchor="middle" fill="#64748b" font-size="10" font-weight="300">Artificial Intelligence Microservice Architecture</text>
+
+  <!-- ======== LAYER 1: 用户接入层 ======== -->
+  <g id="layer1">
+    <!-- Region boundary -->
+    <rect x="55" y="100" width="1090" height="145" rx="8" fill="#22d3ee" fill-opacity="0.04" stroke="#22d3ee" stroke-opacity="0.25" stroke-width="1.2"/>
+    <rect x="55" y="100" width="1090" height="145" rx="8" fill="none" stroke="#22d3ee" stroke-opacity="0.08" stroke-width="0.5" stroke-dasharray="4,4"/>
+    <!-- Region label -->
+    <rect x="55" y="100" width="110" height="24" rx="4" fill="none" stroke="#22d3ee" stroke-opacity="0.4" stroke-width="0.8"/>
+    <text x="110" y="115" text-anchor="middle" fill="#22d3ee" font-size="11" font-weight="600">用户接入层</text>
+
+    <!-- Components: x=180/500/820, y=140, w=200, h=70 -->
+    <!-- Web UI -->
+    <rect x="180" y="140" width="200" height="70" rx="6" fill="#020617" opacity="1"/> <!-- mask -->
+    <rect x="180" y="140" width="200" height="70" rx="6" fill="#22d3ee" fill-opacity="0.12" stroke="#22d3ee" stroke-opacity="0.6" stroke-width="1.2" filter="url(#shadow)"/>
+    <rect x="180" y="140" width="200" height="70" rx="6" fill="none" stroke="#22d3ee" stroke-opacity="0.2" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <text x="280" y="167" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="500">Web UI</text>
+    <text x="280" y="182" text-anchor="middle" fill="#22d3ee" font-size="9" font-weight="300">用户界面</text>
+    <text x="370" y="148" text-anchor="end" fill="#22d3ee" font-size="8" font-weight="300" opacity="0.6">UI</text>
+
+    <!-- Mobile App -->
+    <rect x="500" y="140" width="200" height="70" rx="6" fill="#020617" opacity="1"/>
+    <rect x="500" y="140" width="200" height="70" rx="6" fill="#22d3ee" fill-opacity="0.12" stroke="#22d3ee" stroke-opacity="0.6" stroke-width="1.2" filter="url(#shadow)"/>
+    <rect x="500" y="140" width="200" height="70" rx="6" fill="none" stroke="#22d3ee" stroke-opacity="0.2" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <text x="600" y="167" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="500">Mobile App</text>
+    <text x="600" y="182" text-anchor="middle" fill="#22d3ee" font-size="9" font-weight="300">移动端</text>
+    <text x="690" y="148" text-anchor="end" fill="#22d3ee" font-size="8" font-weight="300" opacity="0.6">APP</text>
+
+    <!-- API Client -->
+    <rect x="820" y="140" width="200" height="70" rx="6" fill="#020617" opacity="1"/>
+    <rect x="820" y="140" width="200" height="70" rx="6" fill="#22d3ee" fill-opacity="0.12" stroke="#22d3ee" stroke-opacity="0.6" stroke-width="1.2" filter="url(#shadow)"/>
+    <rect x="820" y="140" width="200" height="70" rx="6" fill="none" stroke="#22d3ee" stroke-opacity="0.2" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <text x="920" y="167" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="500">API Client</text>
+    <text x="920" y="182" text-anchor="middle" fill="#22d3ee" font-size="9" font-weight="300">API接口</text>
+    <text x="1010" y="148" text-anchor="end" fill="#22d3ee" font-size="8" font-weight="300" opacity="0.6">API</text>
+  </g>
+
+  <!-- ======== LAYER 2: AI/Agent层 ======== -->
+  <g id="layer2">
+    <rect x="55" y="285" width="1090" height="145" rx="8" fill="#34d399" fill-opacity="0.04" stroke="#34d399" stroke-opacity="0.25" stroke-width="1.2"/>
+    <rect x="55" y="285" width="1090" height="145" rx="8" fill="none" stroke="#34d399" stroke-opacity="0.08" stroke-width="0.5" stroke-dasharray="4,4"/>
+    <rect x="55" y="285" width="105" height="24" rx="4" fill="none" stroke="#34d399" stroke-opacity="0.4" stroke-width="0.8"/>
+    <text x="107" y="300" text-anchor="middle" fill="#34d399" font-size="11" font-weight="600">AI / Agent层</text>
+
+    <!-- Agent Orchestrator -->
+    <rect x="180" y="325" width="200" height="70" rx="6" fill="#020617" opacity="1"/>
+    <rect x="180" y="325" width="200" height="70" rx="6" fill="#34d399" fill-opacity="0.12" stroke="#34d399" stroke-opacity="0.6" stroke-width="1.2" filter="url(#shadow)"/>
+    <rect x="180" y="325" width="200" height="70" rx="6" fill="none" stroke="#34d399" stroke-opacity="0.2" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <text x="280" y="352" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="500">Agent Orchestrator</text>
+    <text x="280" y="367" text-anchor="middle" fill="#34d399" font-size="9" font-weight="300">智能体编排</text>
+    <text x="370" y="333" text-anchor="end" fill="#34d399" font-size="8" font-weight="300" opacity="0.6">ORCH</text>
+
+    <!-- LLM Gateway -->
+    <rect x="500" y="325" width="200" height="70" rx="6" fill="#020617" opacity="1"/>
+    <rect x="500" y="325" width="200" height="70" rx="6" fill="#34d399" fill-opacity="0.12" stroke="#34d399" stroke-opacity="0.6" stroke-width="1.2" filter="url(#shadow)"/>
+    <rect x="500" y="325" width="200" height="70" rx="6" fill="none" stroke="#34d399" stroke-opacity="0.2" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <text x="600" y="352" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="500">LLM Gateway</text>
+    <text x="600" y="367" text-anchor="middle" fill="#34d399" font-size="9" font-weight="300">LLM网关</text>
+    <text x="690" y="333" text-anchor="end" fill="#34d399" font-size="8" font-weight="300" opacity="0.6">GW</text>
+
+    <!-- Memory Store -->
+    <rect x="820" y="325" width="200" height="70" rx="6" fill="#020617" opacity="1"/>
+    <rect x="820" y="325" width="200" height="70" rx="6" fill="#34d399" fill-opacity="0.12" stroke="#34d399" stroke-opacity="0.6" stroke-width="1.2" filter="url(#shadow)"/>
+    <rect x="820" y="325" width="200" height="70" rx="6" fill="none" stroke="#34d399" stroke-opacity="0.2" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <text x="920" y="352" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="500">Memory Store</text>
+    <text x="920" y="367" text-anchor="middle" fill="#34d399" font-size="9" font-weight="300">记忆存储</text>
+    <text x="1010" y="333" text-anchor="end" fill="#34d399" font-size="8" font-weight="300" opacity="0.6">MEM</text>
+  </g>
+
+  <!-- ======== LAYER 3: 微服务层 ======== -->
+  <g id="layer3">
+    <rect x="55" y="470" width="1090" height="145" rx="8" fill="#a78bfa" fill-opacity="0.04" stroke="#a78bfa" stroke-opacity="0.25" stroke-width="1.2"/>
+    <rect x="55" y="470" width="1090" height="145" rx="8" fill="none" stroke="#a78bfa" stroke-opacity="0.08" stroke-width="0.5" stroke-dasharray="4,4"/>
+    <rect x="55" y="470" width="100" height="24" rx="4" fill="none" stroke="#a78bfa" stroke-opacity="0.4" stroke-width="0.8"/>
+    <text x="105" y="485" text-anchor="middle" fill="#a78bfa" font-size="11" font-weight="600">微服务层</text>
+
+    <!-- Components: x=128/381/634/887, y=510, w=185, h=70 -->
+    <!-- RAG Service -->
+    <rect x="128" y="510" width="185" height="70" rx="6" fill="#020617" opacity="1"/>
+    <rect x="128" y="510" width="185" height="70" rx="6" fill="#a78bfa" fill-opacity="0.12" stroke="#a78bfa" stroke-opacity="0.6" stroke-width="1.2" filter="url(#shadow)"/>
+    <rect x="128" y="510" width="185" height="70" rx="6" fill="none" stroke="#a78bfa" stroke-opacity="0.2" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <text x="220.5" y="537" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="500">RAG Service</text>
+    <text x="220.5" y="552" text-anchor="middle" fill="#a78bfa" font-size="9" font-weight="300">检索增强生成</text>
+    <text x="304" y="518" text-anchor="end" fill="#a78bfa" font-size="8" font-weight="300" opacity="0.6">RAG</text>
+
+    <!-- Embedding Service -->
+    <rect x="381" y="510" width="185" height="70" rx="6" fill="#020617" opacity="1"/>
+    <rect x="381" y="510" width="185" height="70" rx="6" fill="#a78bfa" fill-opacity="0.12" stroke="#a78bfa" stroke-opacity="0.6" stroke-width="1.2" filter="url(#shadow)"/>
+    <rect x="381" y="510" width="185" height="70" rx="6" fill="none" stroke="#a78bfa" stroke-opacity="0.2" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <text x="473.5" y="537" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="500">Embedding Service</text>
+    <text x="473.5" y="552" text-anchor="middle" fill="#a78bfa" font-size="9" font-weight="300">嵌入服务</text>
+    <text x="557" y="518" text-anchor="end" fill="#a78bfa" font-size="8" font-weight="300" opacity="0.6">EMB</text>
+
+    <!-- Vector Search -->
+    <rect x="634" y="510" width="185" height="70" rx="6" fill="#020617" opacity="1"/>
+    <rect x="634" y="510" width="185" height="70" rx="6" fill="#a78bfa" fill-opacity="0.12" stroke="#a78bfa" stroke-opacity="0.6" stroke-width="1.2" filter="url(#shadow)"/>
+    <rect x="634" y="510" width="185" height="70" rx="6" fill="none" stroke="#a78bfa" stroke-opacity="0.2" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <text x="726.5" y="537" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="500">Vector Search</text>
+    <text x="726.5" y="552" text-anchor="middle" fill="#a78bfa" font-size="9" font-weight="300">向量搜索</text>
+    <text x="810" y="518" text-anchor="end" fill="#a78bfa" font-size="8" font-weight="300" opacity="0.6">VEC</text>
+
+    <!-- Model Inference -->
+    <rect x="887" y="510" width="185" height="70" rx="6" fill="#020617" opacity="1"/>
+    <rect x="887" y="510" width="185" height="70" rx="6" fill="#a78bfa" fill-opacity="0.12" stroke="#a78bfa" stroke-opacity="0.6" stroke-width="1.2" filter="url(#shadow)"/>
+    <rect x="887" y="510" width="185" height="70" rx="6" fill="none" stroke="#a78bfa" stroke-opacity="0.2" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <text x="979.5" y="537" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="500">Model Inference</text>
+    <text x="979.5" y="552" text-anchor="middle" fill="#a78bfa" font-size="9" font-weight="300">模型推理</text>
+    <text x="1063" y="518" text-anchor="end" fill="#a78bfa" font-size="8" font-weight="300" opacity="0.6">INF</text>
+  </g>
+
+  <!-- ======== LAYER 4: 基础设施层 ======== -->
+  <g id="layer4">
+    <rect x="55" y="655" width="1090" height="145" rx="8" fill="#fbbf24" fill-opacity="0.04" stroke="#fbbf24" stroke-opacity="0.25" stroke-width="1.2"/>
+    <rect x="55" y="655" width="1090" height="145" rx="8" fill="none" stroke="#fbbf24" stroke-opacity="0.08" stroke-width="0.5" stroke-dasharray="4,4"/>
+    <rect x="55" y="655" width="105" height="24" rx="4" fill="none" stroke="#fbbf24" stroke-opacity="0.4" stroke-width="0.8"/>
+    <text x="107" y="670" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">基础设施层</text>
+
+    <!-- Components: x=128/381/634/887, y=695, w=185, h=70 -->
+    <!-- Message Queue -->
+    <rect x="128" y="695" width="185" height="70" rx="6" fill="#020617" opacity="1"/>
+    <rect x="128" y="695" width="185" height="70" rx="6" fill="#fbbf24" fill-opacity="0.12" stroke="#fbbf24" stroke-opacity="0.6" stroke-width="1.2" filter="url(#shadow)"/>
+    <rect x="128" y="695" width="185" height="70" rx="6" fill="none" stroke="#fbbf24" stroke-opacity="0.2" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <text x="220.5" y="722" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="500">Message Queue</text>
+    <text x="220.5" y="737" text-anchor="middle" fill="#fbbf24" font-size="9" font-weight="300">消息队列</text>
+    <text x="304" y="703" text-anchor="end" fill="#fbbf24" font-size="8" font-weight="300" opacity="0.6">MQ</text>
+
+    <!-- Monitoring -->
+    <rect x="381" y="695" width="185" height="70" rx="6" fill="#020617" opacity="1"/>
+    <rect x="381" y="695" width="185" height="70" rx="6" fill="#fbbf24" fill-opacity="0.12" stroke="#fbbf24" stroke-opacity="0.6" stroke-width="1.2" filter="url(#shadow)"/>
+    <rect x="381" y="695" width="185" height="70" rx="6" fill="none" stroke="#fbbf24" stroke-opacity="0.2" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <text x="473.5" y="722" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="500">Monitoring</text>
+    <text x="473.5" y="737" text-anchor="middle" fill="#fbbf24" font-size="9" font-weight="300">监控服务</text>
+    <text x="557" y="703" text-anchor="end" fill="#fbbf24" font-size="8" font-weight="300" opacity="0.6">MON</text>
+
+    <!-- CI/CD -->
+    <rect x="634" y="695" width="185" height="70" rx="6" fill="#020617" opacity="1"/>
+    <rect x="634" y="695" width="185" height="70" rx="6" fill="#fbbf24" fill-opacity="0.12" stroke="#fbbf24" stroke-opacity="0.6" stroke-width="1.2" filter="url(#shadow)"/>
+    <rect x="634" y="695" width="185" height="70" rx="6" fill="none" stroke="#fbbf24" stroke-opacity="0.2" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <text x="726.5" y="722" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="500">CI / CD</text>
+    <text x="726.5" y="737" text-anchor="middle" fill="#fbbf24" font-size="9" font-weight="300">持续集成</text>
+    <text x="810" y="703" text-anchor="end" fill="#fbbf24" font-size="8" font-weight="300" opacity="0.6">CICD</text>
+
+    <!-- Logging -->
+    <rect x="887" y="695" width="185" height="70" rx="6" fill="#020617" opacity="1"/>
+    <rect x="887" y="695" width="185" height="70" rx="6" fill="#fbbf24" fill-opacity="0.12" stroke="#fbbf24" stroke-opacity="0.6" stroke-width="1.2" filter="url(#shadow)"/>
+    <rect x="887" y="695" width="185" height="70" rx="6" fill="none" stroke="#fbbf24" stroke-opacity="0.2" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <text x="979.5" y="722" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="500">Logging</text>
+    <text x="979.5" y="737" text-anchor="middle" fill="#fbbf24" font-size="9" font-weight="300">日志服务</text>
+    <text x="1063" y="703" text-anchor="end" fill="#fbbf24" font-size="8" font-weight="300" opacity="0.6">LOG</text>
+  </g>
+
+  <!-- ======== ARROWS: INTER-LAYER (VERTICAL) ======== -->
+  <!-- L1 → L2: Solid standard arrows -->
+  <line x1="280" y1="210" x2="280" y2="318" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow-solid)" opacity="0.7"/>
+  <line x1="600" y1="210" x2="600" y2="318" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow-solid)" opacity="0.7"/>
+  <line x1="920" y1="210" x2="920" y2="318" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow-solid)" opacity="0.7"/>
+
+  <!-- L1 → L2: Security auth arrows (dashed rose) -->
+  <line x1="920" y1="210" x2="380" y2="318" stroke="#f43f5e" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-rose)" opacity="0.8"/>
+  <text x="620" y="248" text-anchor="middle" fill="#f43f5e" font-size="8" opacity="0.7" transform="rotate(-22,620,248)">Auth</text>
+
+  <!-- L2 internal horizontal arrows (solid) -->
+  <line x1="380" y1="360" x2="493" y2="360" stroke="#34d399" stroke-width="1.2" marker-end="url(#arrow-emerald)" opacity="0.6"/>
+  <line x1="700" y1="360" x2="813" y2="360" stroke="#34d399" stroke-width="1.2" marker-end="url(#arrow-emerald)" opacity="0.6"/>
+
+  <!-- L2 → L3 (fan out from 3 comps to 4 comps) -->
+  <line x1="280" y1="395" x2="220.5" y2="503" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow-solid)" opacity="0.7"/>
+  <line x1="600" y1="395" x2="473.5" y2="503" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow-solid)" opacity="0.7"/>
+  <line x1="600" y1="395" x2="726.5" y2="503" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow-solid)" opacity="0.7"/>
+  <line x1="920" y1="395" x2="979.5" y2="503" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow-solid)" opacity="0.7"/>
+
+  <!-- L3 internal horizontal arrows -->
+  <line x1="313" y1="545" x2="374" y2="545" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#arrow-purple)" opacity="0.6"/>
+  <line x1="566" y1="545" x2="627" y2="545" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#arrow-purple)" opacity="0.6"/>
+
+  <!-- L3 → L4 -->
+  <line x1="220.5" y1="580" x2="220.5" y2="688" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow-solid)" opacity="0.7"/>
+  <line x1="473.5" y1="580" x2="473.5" y2="688" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow-solid)" opacity="0.7"/>
+  <line x1="726.5" y1="580" x2="726.5" y2="688" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow-solid)" opacity="0.7"/>
+  <line x1="979.5" y1="580" x2="979.5" y2="688" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow-solid)" opacity="0.7"/>
+
+  <!-- L4 internal horizontal arrows -->
+  <line x1="313" y1="730" x2="374" y2="730" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#arrow-amber)" opacity="0.6"/>
+  <line x1="566" y1="730" x2="627" y2="730" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#arrow-amber)" opacity="0.6"/>
+  <line x1="819" y1="730" x2="880" y2="730" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#arrow-amber)" opacity="0.6"/>
+
+  <!-- Security arrow: Monitoring → Logging (dashed rose, audit) -->
+  <line x1="566" y1="750" x2="979.5" y2="750" stroke="#f43f5e" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-rose)" opacity="0.7"/>
+  <text x="770" y="743" text-anchor="middle" fill="#f43f5e" font-size="8" opacity="0.7">Audit</text>
+
+  <!-- ======== LEGEND ======== -->
+  <g id="legend" transform="translate(55, 835)">
+    <rect x="0" y="0" width="1090" height="70" rx="8" fill="#0f172a" fill-opacity="0.6" stroke="#334155" stroke-width="1" stroke-opacity="0.5"/>
+    <text x="20" y="20" fill="#94a3b8" font-size="9" font-weight="500">图例</text>
+
+    <!-- Solid arrow -->
+    <line x1="20" y1="42" x2="60" y2="42" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow-solid)"/>
+    <text x="68" y="45" fill="#64748b" font-size="9">标准数据流</text>
+
+    <!-- Dashed rose -->
+    <line x1="200" y1="42" x2="240" y2="42" stroke="#f43f5e" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrow-rose)"/>
+    <text x="248" y="45" fill="#64748b" font-size="9">安全/鉴权</text>
+
+    <!-- Color swatches -->
+    <rect x="400" y="32" width="14" height="14" rx="3" fill="#22d3ee" fill-opacity="0.4" stroke="#22d3ee" stroke-opacity="0.6" stroke-width="1"/>
+    <text x="420" y="44" fill="#64748b" font-size="9">用户接入层</text>
+
+    <rect x="530" y="32" width="14" height="14" rx="3" fill="#34d399" fill-opacity="0.4" stroke="#34d399" stroke-opacity="0.6" stroke-width="1"/>
+    <text x="550" y="44" fill="#64748b" font-size="9">AI/Agent层</text>
+
+    <rect x="650" y="32" width="14" height="14" rx="3" fill="#a78bfa" fill-opacity="0.4" stroke="#a78bfa" stroke-opacity="0.6" stroke-width="1"/>
+    <text x="670" y="44" fill="#64748b" font-size="9">微服务层</text>
+
+    <rect x="760" y="32" width="14" height="14" rx="3" fill="#fbbf24" fill-opacity="0.4" stroke="#fbbf24" stroke-opacity="0.6" stroke-width="1"/>
+    <text x="780" y="44" fill="#64748b" font-size="9">基础设施层</text>
+  </g>
+
+  <!-- ======== INFO CARDS ======== -->
+  <g id="infocards" transform="translate(55, 930)">
+    <!-- Card 1: 技术栈 -->
+    <rect x="0" y="0" width="340" height="145" rx="8" fill="#0f172a" fill-opacity="0.6" stroke="#334155" stroke-width="1" stroke-opacity="0.5"/>
+    <rect x="0" y="0" width="340" height="28" rx="8" fill="#1e293b" fill-opacity="0.6"/>
+    <rect x="0" y="20" width="340" height="8" rx="0" fill="#1e293b" fill-opacity="0.6"/>
+    <text x="170" y="19" text-anchor="middle" fill="#e2e8f0" font-size="10" font-weight="600">技术栈</text>
+
+    <text x="20" y="48" fill="#94a3b8" font-size="9">▸ Python · PyTorch · LangChain</text>
+    <text x="20" y="66" fill="#94a3b8" font-size="9">▸ FastAPI · gRPC · Redis</text>
+    <text x="20" y="84" fill="#94a3b8" font-size="9">▸ PostgreSQL · Milvus · Qdrant</text>
+    <text x="20" y="102" fill="#94a3b8" font-size="9">▸ Kubernetes · Docker · Istio</text>
+    <text x="20" y="120" fill="#94a3b8" font-size="9">▸ Prometheus · Grafana · ELK</text>
+    <text x="20" y="138" fill="#94a3b8" font-size="9">▸ HuggingFace · vLLM · Triton</text>
+
+    <!-- Card 2: 核心指标 -->
+    <rect x="375" y="0" width="340" height="145" rx="8" fill="#0f172a" fill-opacity="0.6" stroke="#334155" stroke-width="1" stroke-opacity="0.5"/>
+    <rect x="375" y="0" width="340" height="28" rx="8" fill="#1e293b" fill-opacity="0.6"/>
+    <rect x="375" y="20" width="340" height="8" rx="0" fill="#1e293b" fill-opacity="0.6"/>
+    <text x="545" y="19" text-anchor="middle" fill="#e2e8f0" font-size="10" font-weight="600">核心指标</text>
+
+    <text x="395" y="48" fill="#94a3b8" font-size="9">▸ P99 延迟 &lt; 200ms</text>
+    <text x="395" y="66" fill="#94a3b8" font-size="9">▸ 吞吐量 &gt; 10K QPS</text>
+    <text x="395" y="84" fill="#94a3b8" font-size="9">▸ 系统可用性 99.9%</text>
+    <text x="395" y="102" fill="#94a3b8" font-size="9">▸ Embedding 维度 1536</text>
+    <text x="395" y="120" fill="#94a3b8" font-size="9">▸ 上下文窗口 128K tokens</text>
+    <text x="395" y="138" fill="#94a3b8" font-size="9">▸ 模型加载时间 &lt; 5s</text>
+
+    <!-- Card 3: 部署环境 -->
+    <rect x="750" y="0" width="340" height="145" rx="8" fill="#0f172a" fill-opacity="0.6" stroke="#334155" stroke-width="1" stroke-opacity="0.5"/>
+    <rect x="750" y="0" width="340" height="28" rx="8" fill="#1e293b" fill-opacity="0.6"/>
+    <rect x="750" y="20" width="340" height="8" rx="0" fill="#1e293b" fill-opacity="0.6"/>
+    <text x="920" y="19" text-anchor="middle" fill="#e2e8f0" font-size="10" font-weight="600">部署环境</text>
+
+    <text x="770" y="48" fill="#94a3b8" font-size="9">▸ Kubernetes 集群 (v1.28)</text>
+    <text x="770" y="66" fill="#94a3b8" font-size="9">▸ GPU 节点 (NVIDIA A100 80G)</text>
+    <text x="770" y="84" fill="#94a3b8" font-size="9">▸ 自动扩缩容 (HPA + VPA)</text>
+    <text x="770" y="102" fill="#94a3b8" font-size="9">▸ 多区域高可用部署</text>
+    <text x="770" y="120" fill="#94a3b8" font-size="9">▸ 蓝绿发布 / 灰度发布</text>
+    <text x="770" y="138" fill="#94a3b8" font-size="9">▸ 私有云 + 混合云架构</text>
+  </g>
+
+</svg>
+</body>
+</html>

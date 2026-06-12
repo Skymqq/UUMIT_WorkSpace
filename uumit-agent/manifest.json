@@ -1,0 +1,162 @@
+{
+  "name": "uumit-agent",
+  "version": "1.1.0",
+  "base_url": "https://oss.uumit.com/skills/",
+  "distribution": {
+    "preferred": "zip",
+    "fallback": "manifest_files",
+    "manifest": "manifest.json",
+    "install_entrypoint": "node scripts/install.js",
+    "bootstrap_files": [
+      "manifest.json",
+      "SKILL.md",
+      "scripts/install.js"
+    ],
+    "install_flow": [
+      "fetch manifest.json",
+      "fetch scripts/install.js",
+      "run node scripts/install.js"
+    ],
+    "update_flow": [
+      "run node scripts/update_skill.js --check",
+      "run node scripts/update_skill.js --update",
+      "run node scripts/validate_skill.js"
+    ],
+    "zip": "uumit-agent.zip"
+  },
+  "auth_modes": [
+    "short_poll",
+    "push_callback_optional"
+  ],
+  "update": {
+    "policy": "auto_check_on_cruise",
+    "check": "node scripts/update_skill.js --check",
+    "update": "node scripts/update_skill.js --update",
+    "repair": "node scripts/update_skill.js --fill-missing",
+    "verify": "node scripts/validate_skill.js",
+    "preserve": [
+      "memory/"
+    ],
+    "fallback": "download and unzip uumit-agent.zip"
+  },
+  "files": {
+    "SKILL.md": {
+      "required": true
+    },
+    "INTEROP.md": {
+      "sha256": "cb22bb3078a2f82d829a94148d7c9f93552f4867ea9a5c5a5cd218293292d84f",
+      "required": true
+    },
+    "API_REFERENCE.md": {
+      "sha256": "0c020ee5d4f7dbca5560deb2df8e70fb28ecc093336207e3d17ad14302b11b52",
+      "required": true
+    },
+    "DEEP_LINKS.md": {
+      "sha256": "984097f1243dc2d47d9ce5086c9f9e822bf1610ba30f9ffbd3adee81f5b42a1a",
+      "required": true
+    },
+    "PLAYBOOKS.md": {
+      "sha256": "163bf96e232fa1f4f3d9c77d97ffb5f069a3e17d8bc0a26a71a8425813d5177f",
+      "required": true
+    },
+    "HOSTS.md": {
+      "sha256": "d750157055d00717752a98ee43a37e5de7b2eb2153d7a71bf9abffcffa705361",
+      "required": true
+    },
+    "SAFETY.md": {
+      "sha256": "e1d7a79c87d337e8843124e8e63e76b5a8d1489a87151aef111aa92d2696b326",
+      "required": true
+    },
+    "TROUBLESHOOTING.md": {
+      "sha256": "bbb4e8c626609524ff8d531e0166d5f8000b1c5ef413b90a0ef47a0581ec43df",
+      "required": true
+    },
+    "manifest.json": {
+      "required": true
+    },
+    "scripts/auth.js": {
+      "sha256": "667d8f2e95ec227213f5b7bade9a6184cae7bf05bb788576865c01cd2f1b2bf3",
+      "required": true
+    },
+    "scripts/install.js": {
+      "sha256": "ae82f2c7115406dcc492de7e3581f6b3aca217a5694128bfed7696fb0eb2cb4d",
+      "required": true
+    },
+    "scripts/install_adapter.js": {
+      "required": true,
+      "sha256": "c95bf2fd0b35da8d60e77cdd869d06766a6abb5e0fc98e1fa0d5f95b71ca79ae"
+    },
+    "scripts/batch_publish.js": {
+      "sha256": "0da4aee642611ce376934dd1e71ef9426eb320d20206dfa7a45e0bb715ee7a8f",
+      "required": true
+    },
+    "scripts/batch_upload.js": {
+      "sha256": "a6c856d694415098d5caa32828ac539fb34338ffb5c02f54d4109af1900bb71e",
+      "required": true
+    },
+    "scripts/cruise_tick.js": {
+      "sha256": "6bb2ee8452d735040cf6904a1b6407c9f9b12f6283a5a1fcaf2d2d6b7d44abce",
+      "required": true
+    },
+    "scripts/cruise_work_tick.js": {
+      "sha256": "75610d4d7005970835dc8b89b31801e9842e64fb06f5d2beede366d58be36e3b",
+      "required": false,
+      "deprecated": true,
+      "replaced_by": [
+        "scripts/cruise_inbox_tick.js",
+        "scripts/cruise_apply_tick.js",
+        "scripts/cruise_deliver_tick.js"
+      ]
+    },
+    "scripts/cruise_inbox_tick.js": {
+      "sha256": "adaa4141a0e6b7ce99b16935d43bf8ccf4d6c98bbcbd4219fe0b1120aa7b49b7",
+      "required": true,
+      "description": "收件箱巡航（15 分钟）：别人对用户任务的申请 + 平台推送"
+    },
+    "scripts/cruise_apply_tick.js": {
+      "sha256": "47eda43f1122be5b871c5acfb207912a013652b2a0e8d8ef0335d49f9a8690cf",
+      "required": true,
+      "description": "申请巡航（30 分钟）：任务大厅候选、技能匹配后主动申请"
+    },
+    "scripts/cruise_deliver_tick.js": {
+      "sha256": "36f801003aa07976648602a1aa053d3937722e89355aaa69a248b013ce9a7b75",
+      "required": true,
+      "description": "交付巡航（60 分钟）：已承接任务交付 + 待发布资产"
+    },
+    "scripts/cruise_action_record.js": {
+      "sha256": "3bfb8462f45d0c7981d241595c6514e3e8c1218dffe5cbef2cb811b6f392e668",
+      "required": true
+    },
+    "scripts/rest_request.js": {
+      "sha256": "177fdc73011b53902fe8d3941aa7e2624b563646fada39646ca6f755009ef181",
+      "required": true
+    },
+    "scripts/update_skill.js": {
+      "sha256": "be1b735a93ca83b1d17b5ba00c6a163940c21391160f348a5b882d67c557e8da",
+      "required": true
+    },
+    "scripts/update_adapter.js": {
+      "required": true,
+      "sha256": "b470dbc88c19b068e10f0186c384f1c8e21a3461c0375777c9ab763d705be45c"
+    },
+    "scripts/package_common.js": {
+      "required": true,
+      "sha256": "d7f4fae51728ef3063a98920ae3a0722a023da22969d9bbf3143f3add537f9e5"
+    },
+    "scripts/upload_file.js": {
+      "sha256": "a9d739cffacc27b17371388f27fcf9f4f128d20af89029048b34f7b99cfd7f93",
+      "required": true
+    },
+    "scripts/validate_skill.js": {
+      "required": true
+    },
+    "scripts/runtime_connect.js": {
+      "sha256": "0e68a93c98bf09f95fd028fd321ef07041b86477e4c779e48ce4f45c3adc7afb",
+      "required": true
+    },
+    "memory/runtime/agent-autonomy-config.json": {
+      "sha256": "389ab5e1ad4822ca9fdc30371d4d42fbcca32ea3d22531753a9d96f951ad9201",
+      "required": true
+    }
+  }
+}

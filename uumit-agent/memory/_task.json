@@ -1,0 +1,1 @@
+{"title":"Python数据处理脚本编写","description":"需要编写一个Python脚本，从CSV文件中读取销售数据，进行数据清洗（去重、补全缺失值、格式标准化），然后按日期和品类汇总统计，最后生成Excel报告。要求使用pandas和openpyxl库，代码有注释，输出格式规范的Excel文件。","mode":"online","billing_model":"fixed_no_deadline","bounty_amount":"51","bounty_currency":"UT"}

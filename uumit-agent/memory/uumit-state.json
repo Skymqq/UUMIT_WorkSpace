@@ -1,0 +1,305 @@
+{
+  "cruise": {
+    "registered": true,
+    "local_state_registered": true,
+    "host_schedule_required": true,
+    "host_schedule_status": "pending",
+    "schedule_name": "UUMit 状态巡航",
+    "interval_seconds": 21600,
+    "schedule_request": {
+      "action": "register_schedule",
+      "name": "UUMit 状态巡航",
+      "dedupe_key": "uumit-account-cruise-21600s",
+      "legacy_dedupe_keys": [
+        "uumit-account-cruise"
+      ],
+      "schedule_version": "uumit-account-cruise@21600s",
+      "interval_seconds": 21600,
+      "run_immediately": false,
+      "description": "UUMit 每 6 小时自动状态对账巡航，由 Agent 按 SKILL.md §4.1 执行。",
+      "agent_prompt": "请每 6 小时执行一次 UUMit 状态巡航任务。 第一步：运行 node {UUMIT_SKILL_DIR}/scripts/cruise_tick.js，并只在内部解析返回的 JSON，不要把原始 JSON、stdout、stderr 或完整快照直接发给用户。 第二步：cruise_tick.js 只负责账户、钱包、订单、交易、审核、资料完整度等状态对账，以及 Skill 更新检查；不要在此任务里主动找可接任务。 第三步：只有状态变化且需要用户行动时才通知用户；没有需要处理或值得用户知道的变化时保持静默。 不得暴露密码、API Key、私有文件、浏览器会话、私有仓库、shell 访问或原始本地数据。"
+    },
+    "updated_at": "2026-06-12T03:22:42.071Z"
+  },
+  "inbox_cruise": {
+    "registered": true,
+    "local_state_registered": true,
+    "host_schedule_required": true,
+    "host_schedule_status": "pending",
+    "schedule_name": "UUMit 收件箱巡航",
+    "interval_seconds": 900,
+    "schedule_request": {
+      "action": "register_schedule",
+      "name": "UUMit 收件箱巡航",
+      "dedupe_key": "uumit-inbox-cruise-900s",
+      "legacy_dedupe_keys": [
+        "uumit-inbox-cruise"
+      ],
+      "schedule_version": "uumit-inbox-cruise@900s",
+      "interval_seconds": 900,
+      "run_immediately": false,
+      "description": "UUMit 每 15 分钟检查别人对用户任务的申请和平台推送。",
+      "agent_prompt": "请每 15 分钟执行一次 UUMit 收件箱巡航。 第一步：运行 node {UUMIT_SKILL_DIR}/scripts/cruise_inbox_tick.js，内部解析 JSON，不要把原始输出发给用户。 第二步：若策略允许，可在低风险场景下自动处理申请或推送，并向用户汇报摘要。 第三步：对 push_candidates 判断是否匹配用户技能，仅在策略允许时才真实提交响应。 无新申请和推送时保持静默。不得暴露密码、API Key、私有文件或原始数据。"
+    },
+    "updated_at": "2026-06-12T03:22:42.075Z"
+  },
+  "apply_cruise": {
+    "registered": true,
+    "local_state_registered": true,
+    "host_schedule_required": true,
+    "host_schedule_status": "pending",
+    "schedule_name": "UUMit 申请巡航",
+    "interval_seconds": 1800,
+    "schedule_request": {
+      "action": "register_schedule",
+      "name": "UUMit 申请巡航",
+      "dedupe_key": "uumit-apply-cruise-1800s",
+      "legacy_dedupe_keys": [
+        "uumit-apply-cruise"
+      ],
+      "schedule_version": "uumit-apply-cruise@1800s",
+      "interval_seconds": 1800,
+      "run_immediately": false,
+      "description": "UUMit 每 30 分钟浏览任务大厅，技能匹配后主动申请。",
+      "agent_prompt": "请每 30 分钟执行一次 UUMit 申请巡航。 第一步：运行 node {UUMIT_SKILL_DIR}/scripts/cruise_apply_tick.js，内部解析 JSON。 第二步：调用 GET /api/v1/skills?page_size=50 获取用户技能列表，对 task_market.candidates 做语义匹配。 第三步：默认不自动提交申请，只输出建议与下一步动作。 已申请（already_done=true）的任务跳过。无合适任务时保持静默。"
+    },
+    "updated_at": "2026-06-12T03:22:42.075Z"
+  },
+  "deliver_cruise": {
+    "registered": true,
+    "local_state_registered": true,
+    "host_schedule_required": true,
+    "host_schedule_status": "pending",
+    "schedule_name": "UUMit 交付巡航",
+    "interval_seconds": 3600,
+    "schedule_request": {
+      "action": "register_schedule",
+      "name": "UUMit 交付巡航",
+      "dedupe_key": "uumit-deliver-cruise-3600s",
+      "legacy_dedupe_keys": [
+        "uumit-deliver-cruise"
+      ],
+      "schedule_version": "uumit-deliver-cruise@3600s",
+      "interval_seconds": 3600,
+      "run_immediately": false,
+      "description": "UUMit 每 60 分钟检查已承接任务进度和待发布资产。",
+      "agent_prompt": "请每 60 分钟执行一次 UUMit 交付巡航。 第一步：运行 node {UUMIT_SKILL_DIR}/scripts/cruise_deliver_tick.js，内部解析 JSON。 第二步：默认只准备交付方案与 payload，不自动真实提交。 第三步：无待交付订单时保持静默。任何情况下都不得暴露密码、API Key、私有文件或原始本地数据。"
+    },
+    "updated_at": "2026-06-12T03:22:42.075Z"
+  },
+  "schedule_requests": [
+    {
+      "action": "register_schedule",
+      "name": "UUMit 状态巡航",
+      "dedupe_key": "uumit-account-cruise-21600s",
+      "legacy_dedupe_keys": [
+        "uumit-account-cruise"
+      ],
+      "schedule_version": "uumit-account-cruise@21600s",
+      "interval_seconds": 21600,
+      "run_immediately": false,
+      "description": "UUMit 每 6 小时自动状态对账巡航，由 Agent 按 SKILL.md §4.1 执行。",
+      "agent_prompt": "请每 6 小时执行一次 UUMit 状态巡航任务。 第一步：运行 node {UUMIT_SKILL_DIR}/scripts/cruise_tick.js，并只在内部解析返回的 JSON，不要把原始 JSON、stdout、stderr 或完整快照直接发给用户。 第二步：cruise_tick.js 只负责账户、钱包、订单、交易、审核、资料完整度等状态对账，以及 Skill 更新检查；不要在此任务里主动找可接任务。 第三步：只有状态变化且需要用户行动时才通知用户；没有需要处理或值得用户知道的变化时保持静默。 不得暴露密码、API Key、私有文件、浏览器会话、私有仓库、shell 访问或原始本地数据。"
+    },
+    {
+      "action": "register_schedule",
+      "name": "UUMit 收件箱巡航",
+      "dedupe_key": "uumit-inbox-cruise-900s",
+      "legacy_dedupe_keys": [
+        "uumit-inbox-cruise"
+      ],
+      "schedule_version": "uumit-inbox-cruise@900s",
+      "interval_seconds": 900,
+      "run_immediately": false,
+      "description": "UUMit 每 15 分钟检查别人对用户任务的申请和平台推送。",
+      "agent_prompt": "请每 15 分钟执行一次 UUMit 收件箱巡航。 第一步：运行 node {UUMIT_SKILL_DIR}/scripts/cruise_inbox_tick.js，内部解析 JSON，不要把原始输出发给用户。 第二步：若策略允许，可在低风险场景下自动处理申请或推送，并向用户汇报摘要。 第三步：对 push_candidates 判断是否匹配用户技能，仅在策略允许时才真实提交响应。 无新申请和推送时保持静默。不得暴露密码、API Key、私有文件或原始数据。"
+    },
+    {
+      "action": "register_schedule",
+      "name": "UUMit 申请巡航",
+      "dedupe_key": "uumit-apply-cruise-1800s",
+      "legacy_dedupe_keys": [
+        "uumit-apply-cruise"
+      ],
+      "schedule_version": "uumit-apply-cruise@1800s",
+      "interval_seconds": 1800,
+      "run_immediately": false,
+      "description": "UUMit 每 30 分钟浏览任务大厅，技能匹配后主动申请。",
+      "agent_prompt": "请每 30 分钟执行一次 UUMit 申请巡航。 第一步：运行 node {UUMIT_SKILL_DIR}/scripts/cruise_apply_tick.js，内部解析 JSON。 第二步：调用 GET /api/v1/skills?page_size=50 获取用户技能列表，对 task_market.candidates 做语义匹配。 第三步：默认不自动提交申请，只输出建议与下一步动作。 已申请（already_done=true）的任务跳过。无合适任务时保持静默。"
+    },
+    {
+      "action": "register_schedule",
+      "name": "UUMit 交付巡航",
+      "dedupe_key": "uumit-deliver-cruise-3600s",
+      "legacy_dedupe_keys": [
+        "uumit-deliver-cruise"
+      ],
+      "schedule_version": "uumit-deliver-cruise@3600s",
+      "interval_seconds": 3600,
+      "run_immediately": false,
+      "description": "UUMit 每 60 分钟检查已承接任务进度和待发布资产。",
+      "agent_prompt": "请每 60 分钟执行一次 UUMit 交付巡航。 第一步：运行 node {UUMIT_SKILL_DIR}/scripts/cruise_deliver_tick.js，内部解析 JSON。 第二步：默认只准备交付方案与 payload，不自动真实提交。 第三步：无待交付订单时保持静默。任何情况下都不得暴露密码、API Key、私有文件或原始本地数据。"
+    }
+  ],
+  "post_auth": {
+    "required": true,
+    "blocking_after_auth": true,
+    "final_response_allowed_after": "monetizable candidate scan is completed and candidate summaries are shown to the user, or a clear scan blocker is reported",
+    "action": "continue_post_auth_onboarding",
+    "description": "授权成功后 Agent 必须在同一工作流继续执行宿主能力与可变现资产扫描、A2A/MCP 接入信息读取；不得只回复“已授权”就停止。扫描只生成隔离候选清单，并输出给用户选择。用户逐项选择并确认后，才可上架知识商店、技能、能力或数据 API。",
+    "interop_debug_request": {
+      "action": "fetch_interop_debug",
+      "command": "node \"D:\\mqq\\develop\\UUMIT_WorkSpace\\uumit-agent\\scripts\\rest_request.js\" GET /api/v1/interop/debug",
+      "endpoint": "/api/v1/interop/debug"
+    },
+    "host_capability_scan_request": {
+      "action": "scan_host_capabilities",
+      "agent_platform_type": "openclaw",
+      "required": true,
+      "required_before_final_user_reply": true,
+      "scan_targets": [
+        "host_tools",
+        "installed_non_basic_skills",
+        "mcp_servers",
+        "agent_card_or_public_url",
+        "safe_workflows",
+        "local_documents_metadata",
+        "local_reports_metadata",
+        "local_templates_metadata",
+        "local_datasets_metadata",
+        "project_docs_metadata",
+        "public_templates_or_datasets",
+        "digital_assets_or_templates",
+        "credential_backed_account_assets_metadata_only"
+      ],
+      "scan_goal": "Discover monetizable skills and documents/assets owned by the user, including but not limited to reports, documents, templates, datasets, playbooks, guides, reusable workflows, public APIs, MCP servers, and non-basic agent skills.",
+      "isolation_policy": {
+        "metadata_only": true,
+        "session_scoped_candidates_file": "memory/sessions/<session_id>/monetizable-candidates.json",
+        "never_store_secret_values": true,
+        "require_user_selection_before_publish": true,
+        "show_candidates_to_user": true
+      },
+      "basic_skill_filters": [
+        "generic_chat",
+        "generic_search",
+        "local_shell",
+        "filesystem_read_write",
+        "browser_control",
+        "terminal_operations",
+        "package_management",
+        "git_operations",
+        "mcp_bridge_itself",
+        "system_or_debug_tools",
+        "uumit_skill_self"
+      ],
+      "basic_skill_judgement_rule": "Agent must judge basic skills by capability boundary, not by name alone. Exclude generic host abilities such as chat, search, shell, filesystem, browser, package/git operations, system/debug helpers, and wrapper-only MCP bridges. Keep only differentiated, user-owned, auditable abilities with a clear buyer value and deliverable boundary.",
+      "safety_exclusions": [
+        "local_shell",
+        "private_files",
+        "private_repositories",
+        "secrets",
+        "credentials",
+        "passwords",
+        "api_keys",
+        "cookies",
+        "oauth_tokens",
+        "private_keys",
+        "environment_variables",
+        "browser_session",
+        "personal_identity_information",
+        "contacts_or_chat_history",
+        "unredacted_customer_data"
+      ],
+      "candidate_schema": {
+        "id": "<stable-local-candidate-id>",
+        "title": "<short user-facing name>",
+        "type": "skill|knowledge_store_asset|data_api|capability|workflow|account_asset",
+        "source": "<host|mcp|local_metadata|public_url|user_provided>",
+        "suggested_listing_path": "knowledge_store|skill|capability|data_marketplace|do_not_list",
+        "summary": "<what can be sold or delivered>",
+        "buyer_value": "<why someone would pay>",
+        "deliverable_boundary": "<exact output buyer receives>",
+        "agent_can_self_complete": true,
+        "agent_can_self_deliver": true,
+        "self_completion_reason": "<tools/data/permissions that make it feasible, or blocker>",
+        "privacy_risk": "low|medium|high",
+        "needs_desensitization": false,
+        "needs_user_file_selection": false,
+        "suggested_price_ut": "<required market-based suggestion when listing path is not do_not_list>",
+        "suggested_price_range_ut": {
+          "low": "<optional>",
+          "high": "<optional>"
+        },
+        "pricing_model": "<fixed|per_hour|per_day|per_use|per_query|negotiable>",
+        "pricing_basis": "<market samples, comparable listings, delivery cost, or insufficient market data>",
+        "excluded_reason": "<only when filtered or unsafe>"
+      },
+      "user_output_requirement": "After scanning, present a short candidate list to the user with title, type, suggested listing path, privacy risk, whether the Agent can self-complete and self-deliver, market-based suggested price/range, and next required confirmation. Prefer Knowledge Store for monetizable documents/assets. Do not publish anything automatically.",
+      "after_scan": "Show only non-sensitive candidate summaries, filter out basic skills by judgement rule, mark agent_can_self_complete/agent_can_self_deliver for each candidate, call /api/v1/pricing/suggestion or inspect comparable listings to produce suggested_price_ut, and ask the user which discovered capabilities/assets may be listed on UUMit before any publish/register write call."
+    },
+    "a2a_onboarding_request": {
+      "action": "inspect_a2a_and_mcp_entrypoints",
+      "a2a_url": "https://api.uumit.com/a2a",
+      "agent_card_url": "https://api.uumit.com/.well-known/agent.json",
+      "mcp_sse_url": "https://api.uumit.com/mcp/sse",
+      "mcp_bridge_url": "https://api.uumit.com/api/v1/mcp/bridge",
+      "auth_headers": {
+        "X-Api-Key": "dqXoUpBB94rcXXs8ofX2uk0MlM5hyczz1qmB_J9wWIo5wbbFURsuOglc-kVH5AwU",
+        "X-Platform-User-Id": "4e3941ba-22be-406a-8575-d9cb8a13eb87"
+      }
+    },
+    "publish_options": {
+      "capabilities_endpoint": "/api/v1/capabilities",
+      "skills_endpoint": "/api/v1/skills",
+      "knowledge_store_endpoint": "/api/v1/digital-assets/quick-upload",
+      "data_apis_endpoint": "/api/v1/data-marketplace/apis",
+      "require_user_confirmation": true,
+      "default_document_listing_path": "knowledge_store"
+    },
+    "next_actions": [
+      "register_cruise_schedules_from_schedule_requests",
+      "start_runtime_connection_if_supported",
+      "register_mcp_from_mcp_request",
+      "fetch_interop_debug",
+      "scan_host_capabilities",
+      "inspect_a2a_and_mcp_entrypoints",
+      "present_monetizable_candidate_summaries_to_user",
+      "ask_user_which_candidates_to_publish_or_skip"
+    ],
+    "status": "pending",
+    "updated_at": "2026-06-12T03:22:42.080Z"
+  },
+  "last_update_at": 1780880534011,
+  "previous_version": "1.0.37",
+  "local_version": "1.1.0",
+  "updated_files": [
+    "SKILL.md",
+    "INTEROP.md",
+    "API_REFERENCE.md",
+    "DEEP_LINKS.md",
+    "PLAYBOOKS.md",
+    "HOSTS.md",
+    "SAFETY.md",
+    "TROUBLESHOOTING.md",
+    "manifest.json",
+    "scripts/auth.js",
+    "scripts/install.js",
+    "scripts/install_adapter.js",
+    "scripts/batch_publish.js",
+    "scripts/batch_upload.js",
+    "scripts/cruise_tick.js",
+    "scripts/cruise_inbox_tick.js",
+    "scripts/cruise_apply_tick.js",
+    "scripts/cruise_deliver_tick.js",
+    "scripts/cruise_action_record.js",
+    "scripts/rest_request.js",
+    "scripts/update_skill.js",
+    "scripts/update_adapter.js",
+    "scripts/package_common.js",
+    "scripts/upload_file.js",
+    "scripts/validate_skill.js",
+    "scripts/runtime_connect.js"
+  ],
+  "failed_files": []
+}

@@ -1,0 +1,53 @@
+{
+  "bid_history": {
+    "cmq3c6faw041oju04nxx36wr1": {
+      "bid_at": "2026-06-08T08:08:55.697Z"
+    },
+    "cmpioak06000njs04q48tj0rf": {
+      "bid_at": "2026-06-08T08:08:58.743Z"
+    },
+    "cmpbn3wbv0003l1040xy5eno0": {
+      "bid_at": "2026-06-08T08:09:01.034Z"
+    },
+    "cmp9b1a700001l804i2gggg1y": {
+      "bid_at": "2026-06-08T08:09:04.850Z"
+    },
+    "cmp4ved0z000ekz04oj8tqkmv": {
+      "bid_at": "2026-06-08T08:09:17.140Z"
+    },
+    "cmp2bsoal004ljm046fxhzm4g": {
+      "bid_at": "2026-06-08T08:09:19.350Z"
+    },
+    "cmp2bsew90001jm04q8ks8ef3": {
+      "bid_at": "2026-06-08T08:09:22.104Z"
+    },
+    "cmp1sqaxt0001i9046hifcvdf": {
+      "bid_at": "2026-06-08T08:09:23.473Z"
+    },
+    "cmozzyegy000djs04vdgsltsu": {
+      "bid_at": "2026-06-08T08:09:24.996Z"
+    },
+    "cmox4fb0v000vjy04suy5b856": {
+      "bid_at": "2026-06-08T08:09:26.515Z"
+    },
+    "cmox44j3n0014la04w61w50oo": {
+      "bid_at": "2026-06-08T08:09:28.317Z"
+    },
+    "cmowhldxp0005la04qjf9u62l": {
+      "bid_at": "2026-06-08T08:09:30.552Z"
+    },
+    "cmoqlaqzi0001l804t2ctz44w": {
+      "bid_at": "2026-06-08T08:09:33.171Z"
+    },
+    "cmo8h89aq0001jz04gjespxn4": {
+      "bid_at": "2026-06-08T08:09:33.902Z"
+    },
+    "cmnspjadl00cpkw04rtpkvteh": {
+      "bid_at": "2026-06-08T08:09:36.028Z"
+    },
+    "cmnspiq8j0001kw04wf8mi81f": {
+      "bid_at": "2026-06-08T08:09:37.924Z"
+    }
+  },
+  "last_tick": "2026-06-09T05:59:43.379Z"
+}

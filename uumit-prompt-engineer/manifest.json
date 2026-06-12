@@ -1,0 +1,22 @@
+{
+  "name": "uumit-prompt-engineer",
+  "version": "1.0.0",
+  "description": "UUMit Prompt Engineer — AI提示词工程专家",
+  "homepage": "https://m.uumit.com",
+  "files": [
+    "SKILL.md",
+    "manifest.json",
+    "scripts/install.js"
+  ],
+  "runtime": {
+    "node": ">=18"
+  },
+  "install_flow": [
+    "fetch manifest.json",
+    "fetch SKILL.md",
+    "run node scripts/install.js"
+  ],
+  "permissions": [
+    "network:https://api.uumit.com"
+  ]
+}

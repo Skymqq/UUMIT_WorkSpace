@@ -1,0 +1,18 @@
+{
+  "updated_at": "2026-06-12T01:09:49.637Z",
+  "summary": {
+    "profile": {
+      "nickname": "阿强",
+      "completeness": 100
+    },
+    "wallet": {
+      "ut_available": "910.00",
+      "ut_frozen": "302.00"
+    },
+    "counts": {
+      "todos": null,
+      "active_tasks": null,
+      "pending_transactions": null
+    }
+  }
+}

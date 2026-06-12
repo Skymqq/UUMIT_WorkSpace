@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG 知识库系统架构</title>
+<style>
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: local('JetBrains Mono'), local('JetBrainsMono-Regular');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: local('JetBrains Mono Bold'), local('JetBrainsMono-Bold');
+  font-weight: bold;
+  font-style: normal;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #020617;
+  color: #e2e8f0;
+  font-family: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  min-height: 100vh;
+}
+.container {
+  width: 1000px;
+  max-width: 100%;
+}
+h1 {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #f1f5f9;
+  margin-bottom: 30px;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(255,255,255,0.08);
+}
+svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #020617;
+  border-radius: 12px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>RAG 知识库系统架构</h1>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 1080" width="960" height="1080">
+    <defs>
+      <!-- Background grid pattern -->
+      <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+        <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#1e293b" stroke-width="0.5" opacity="0.5"/>
+      </pattern>
+      <pattern id="grid-dot" width="24" height="24" patternUnits="userSpaceOnUse">
+        <circle cx="12" cy="12" r="1" fill="#334155" opacity="0.4"/>
+      </pattern>
+
+      <!-- Glow filters -->
+      <filter id="glow-cyan">
+        <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#22d3ee" flood-opacity="0.3"/>
+      </filter>
+      <filter id="glow-emerald">
+        <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#34d399" flood-opacity="0.3"/>
+      </filter>
+      <filter id="glow-violet">
+        <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#a78bfa" flood-opacity="0.3"/>
+      </filter>
+      <filter id="glow-amber">
+        <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#fbbf24" flood-opacity="0.3"/>
+      </filter>
+      <filter id="glow-slate">
+        <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#94a3b8" flood-opacity="0.3"/>
+      </filter>
+
+      <!-- Arrow marker -->
+      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 Z" fill="#475569"/>
+      </marker>
+      <marker id="arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 Z" fill="#22d3ee"/>
+      </marker>
+      <marker id="arrow-emerald" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 Z" fill="#34d399"/>
+      </marker>
+      <marker id="arrow-violet" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 Z" fill="#a78bfa"/>
+      </marker>
+      <marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 Z" fill="#fbbf24"/>
+      </marker>
+
+      <!-- Mask for arrows to prevent see-through -->
+      <mask id="arrow-mask">
+        <rect x="0" y="0" width="960" height="1080" fill="white"/>
+      </mask>
+    </defs>
+
+    <!-- Background -->
+    <rect x="0" y="0" width="960" height="1080" fill="#020617"/>
+    <rect x="0" y="0" width="960" height="1080" fill="url(#grid)"/>
+    <rect x="0" y="0" width="960" height="1080" fill="url(#grid-dot)"/>
+
+    <!-- ============================================================ -->
+    <!-- LAYER 1: 前端接入层 (cyan) - y: 80 -->
+    <!-- ============================================================ -->
+    <!-- Layer background -->
+    <rect x="40" y="70" width="880" height="130" rx="10" fill="#22d3ee" fill-opacity="0.04" stroke="#22d3ee" stroke-opacity="0.15" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="50" y="92" font-size="11" fill="#22d3ee" font-weight="bold" opacity="0.9">前端接入层</text>
+
+    <!-- Component boxes -->
+    <!-- 知识库UI -->
+    <rect x="80" y="105" width="200" height="70" rx="6" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5" filter="url(#glow-cyan)"/>
+    <text x="180" y="132" text-anchor="middle" font-size="12" fill="#22d3ee" font-weight="bold">知识库 UI</text>
+    <text x="180" y="150" text-anchor="middle" font-size="9" fill="#64748b">知识管理界面</text>
+
+    <!-- 对话界面 -->
+    <rect x="340" y="105" width="200" height="70" rx="6" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5" filter="url(#glow-cyan)"/>
+    <text x="440" y="132" text-anchor="middle" font-size="12" fill="#22d3ee" font-weight="bold">对话界面</text>
+    <text x="440" y="150" text-anchor="middle" font-size="9" fill="#64748b">交互式问答</text>
+
+    <!-- API Endpoint -->
+    <rect x="600" y="105" width="200" height="70" rx="6" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5" filter="url(#glow-cyan)"/>
+    <text x="700" y="132" text-anchor="middle" font-size="12" fill="#22d3ee" font-weight="bold">API Endpoint</text>
+    <text x="700" y="150" text-anchor="middle" font-size="9" fill="#64748b">RESTful 接口</text>
+
+    <!-- Arrows: 知识库UI -> 对话界面 -->
+    <line x1="280" y1="140" x2="335" y2="140" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)" stroke-dasharray="0"/>
+    <!-- Arrows: 对话界面 -> API Endpoint -->
+    <line x1="540" y1="140" x2="595" y2="140" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)" stroke-dasharray="0"/>
+
+    <!-- ============================================================ -->
+    <!-- LAYER 2: 应用编排层 (emerald) - y: 240 -->
+    <!-- ============================================================ -->
+    <rect x="40" y="230" width="880" height="130" rx="10" fill="#34d399" fill-opacity="0.04" stroke="#34d399" stroke-opacity="0.15" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="50" y="252" font-size="11" fill="#34d399" font-weight="bold" opacity="0.9">应用编排层</text>
+
+    <!-- Query Processor -->
+    <rect x="80" y="265" width="200" height="70" rx="6" fill="#0f172a" stroke="#34d399" stroke-width="1.5" filter="url(#glow-emerald)"/>
+    <text x="180" y="292" text-anchor="middle" font-size="12" fill="#34d399" font-weight="bold">Query Processor</text>
+    <text x="180" y="310" text-anchor="middle" font-size="9" fill="#64748b">查询解析与改写</text>
+
+    <!-- Context Builder -->
+    <rect x="340" y="265" width="200" height="70" rx="6" fill="#0f172a" stroke="#34d399" stroke-width="1.5" filter="url(#glow-emerald)"/>
+    <text x="440" y="292" text-anchor="middle" font-size="12" fill="#34d399" font-weight="bold">Context Builder</text>
+    <text x="440" y="310" text-anchor="middle" font-size="9" fill="#64748b">上下文构建</text>
+
+    <!-- Response Generator -->
+    <rect x="600" y="265" width="200" height="70" rx="6" fill="#0f172a" stroke="#34d399" stroke-width="1.5" filter="url(#glow-emerald)"/>
+    <text x="700" y="292" text-anchor="middle" font-size="12" fill="#34d399" font-weight="bold">Response Gen.</text>
+    <text x="700" y="310" text-anchor="middle" font-size="9" fill="#64748b">答案生成</text>
+
+    <!-- Arrows -->
+    <line x1="280" y1="300" x2="335" y2="300" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="540" y1="300" x2="595" y2="300" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <!-- ============================================================ -->
+    <!-- LAYER 3: 检索增强层 (violet) - y: 400 -->
+    <!-- ============================================================ -->
+    <rect x="40" y="390" width="880" height="150" rx="10" fill="#a78bfa" fill-opacity="0.04" stroke="#a78bfa" stroke-opacity="0.15" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="50" y="412" font-size="11" fill="#a78bfa" font-weight="bold" opacity="0.9">检索增强层</text>
+
+    <!-- Embedding Service -->
+    <rect x="80" y="425" width="170" height="70" rx="6" fill="#0f172a" stroke="#a78bfa" stroke-width="1.5" filter="url(#glow-violet)"/>
+    <text x="165" y="452" text-anchor="middle" font-size="12" fill="#a78bfa" font-weight="bold">Embedding</text>
+    <text x="165" y="470" text-anchor="middle" font-size="9" fill="#64748b">向量嵌入服务</text>
+
+    <!-- Vector DB -->
+    <rect x="290" y="425" width="170" height="70" rx="6" fill="#0f172a" stroke="#a78bfa" stroke-width="1.5" filter="url(#glow-violet)"/>
+    <text x="375" y="452" text-anchor="middle" font-size="12" fill="#a78bfa" font-weight="bold">Vector DB</text>
+    <text x="375" y="470" text-anchor="middle" font-size="9" fill="#64748b">Milvus</text>
+
+    <!-- Reranker -->
+    <rect x="500" y="425" width="170" height="70" rx="6" fill="#0f172a" stroke="#a78bfa" stroke-width="1.5" filter="url(#glow-violet)"/>
+    <text x="585" y="452" text-anchor="middle" font-size="12" fill="#a78bfa" font-weight="bold">Reranker</text>
+    <text x="585" y="470" text-anchor="middle" font-size="9" fill="#64748b">重排序</text>
+
+    <!-- Hybrid Search -->
+    <rect x="710" y="425" width="170" height="70" rx="6" fill="#0f172a" stroke="#a78bfa" stroke-width="1.5" filter="url(#glow-violet)"/>
+    <text x="795" y="452" text-anchor="middle" font-size="12" fill="#a78bfa" font-weight="bold">Hybrid Search</text>
+    <text x="795" y="470" text-anchor="middle" font-size="9" fill="#64748b">混合检索</text>
+
+    <!-- Arrows between retrieval components -->
+    <line x1="250" y1="460" x2="285" y2="460" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="460" y1="460" x2="495" y2="460" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="670" y1="460" x2="705" y2="460" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <!-- ============================================================ -->
+    <!-- LAYER 4: 数据处理层 (amber) - y: 580 -->
+    <!-- ============================================================ -->
+    <rect x="40" y="570" width="880" height="130" rx="10" fill="#fbbf24" fill-opacity="0.04" stroke="#fbbf24" stroke-opacity="0.15" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="50" y="592" font-size="11" fill="#fbbf24" font-weight="bold" opacity="0.9">数据处理层</text>
+
+    <!-- Document Parser -->
+    <rect x="80" y="605" width="200" height="70" rx="6" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5" filter="url(#glow-amber)"/>
+    <text x="180" y="632" text-anchor="middle" font-size="12" fill="#fbbf24" font-weight="bold">Document Parser</text>
+    <text x="180" y="650" text-anchor="middle" font-size="9" fill="#64748b">文档解析器</text>
+
+    <!-- Chunk Manager -->
+    <rect x="340" y="605" width="200" height="70" rx="6" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5" filter="url(#glow-amber)"/>
+    <text x="440" y="632" text-anchor="middle" font-size="12" fill="#fbbf24" font-weight="bold">Chunk Manager</text>
+    <text x="440" y="650" text-anchor="middle" font-size="9" fill="#64748b">文本分块管理</text>
+
+    <!-- Index Builder -->
+    <rect x="600" y="605" width="200" height="70" rx="6" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5" filter="url(#glow-amber)"/>
+    <text x="700" y="632" text-anchor="middle" font-size="12" fill="#fbbf24" font-weight="bold">Index Builder</text>
+    <text x="700" y="650" text-anchor="middle" font-size="9" fill="#64748b">索引构建</text>
+
+    <!-- Arrows -->
+    <line x1="280" y1="640" x2="335" y2="640" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="540" y1="640" x2="595" y2="640" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <!-- ============================================================ -->
+    <!-- LAYER 5: 基础设施 (slate) - y: 740 -->
+    <!-- ============================================================ -->
+    <rect x="40" y="730" width="880" height="130" rx="10" fill="#94a3b8" fill-opacity="0.04" stroke="#94a3b8" stroke-opacity="0.15" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="50" y="752" font-size="11" fill="#94a3b8" font-weight="bold" opacity="0.9">基础设施</text>
+
+    <!-- LLM API Gateway -->
+    <rect x="80" y="765" width="200" height="70" rx="6" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5" filter="url(#glow-slate)"/>
+    <text x="180" y="792" text-anchor="middle" font-size="12" fill="#94a3b8" font-weight="bold">LLM API Gateway</text>
+    <text x="180" y="810" text-anchor="middle" font-size="9" fill="#64748b">模型接口网关</text>
+
+    <!-- Monitoring -->
+    <rect x="340" y="765" width="200" height="70" rx="6" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5" filter="url(#glow-slate)"/>
+    <text x="440" y="792" text-anchor="middle" font-size="12" fill="#94a3b8" font-weight="bold">Monitoring</text>
+    <text x="440" y="810" text-anchor="middle" font-size="9" fill="#64748b">监控与告警</text>
+
+    <!-- Cache Layer -->
+    <rect x="600" y="765" width="200" height="70" rx="6" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5" filter="url(#glow-slate)"/>
+    <text x="700" y="792" text-anchor="middle" font-size="12" fill="#94a3b8" font-weight="bold">Cache Layer</text>
+    <text x="700" y="810" text-anchor="middle" font-size="9" fill="#64748b">缓存层</text>
+
+    <!-- Arrows -->
+    <line x1="280" y1="800" x2="335" y2="800" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="540" y1="800" x2="595" y2="800" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <!-- ============================================================ -->
+    <!-- VERTICAL ARROWS between layers (with double-rect mask) -->
+    <!-- ============================================================ -->
+
+    <!-- Layer 1 -> Layer 2: 前端接入层 -> 应用编排层 -->
+    <!-- Arrow: from center of layer 1 down to layer 2 -->
+    <line x1="440" y1="175" x2="440" y2="260" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <!-- Layer 2 -> Layer 3: 应用编排层 -> 检索增强层 -->
+    <!-- Arrow from Context Builder down to Embedding -->
+    <line x1="440" y1="335" x2="165" y2="420" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <!-- Arrow from Query Processor down to Hybrid Search -->
+    <line x1="180" y1="335" x2="795" y2="420" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <!-- Layer 3 -> Layer 4: 检索增强层 -> 数据处理层 -->
+    <line x1="375" y1="495" x2="440" y2="600" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <!-- Layer 4 -> Layer 5: 数据处理层 -> 基础设施 -->
+    <line x1="440" y1="675" x2="440" y2="760" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <!-- ============================================================ -->
+    <!-- DOUBLE-RECT MASK: prevents arrows from showing through components -->
+    <!-- ============================================================ -->
+    <!-- Re-draw all component rects on top with same fill (opaque) to mask arrows -->
+    <!-- Layer 1 -->
+    <rect x="80" y="105" width="200" height="70" rx="6" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+    <text x="180" y="132" text-anchor="middle" font-size="12" fill="#22d3ee" font-weight="bold">知识库 UI</text>
+    <text x="180" y="150" text-anchor="middle" font-size="9" fill="#64748b">知识管理界面</text>
+
+    <rect x="340" y="105" width="200" height="70" rx="6" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+    <text x="440" y="132" text-anchor="middle" font-size="12" fill="#22d3ee" font-weight="bold">对话界面</text>
+    <text x="440" y="150" text-anchor="middle" font-size="9" fill="#64748b">交互式问答</text>
+
+    <rect x="600" y="105" width="200" height="70" rx="6" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+    <text x="700" y="132" text-anchor="middle" font-size="12" fill="#22d3ee" font-weight="bold">API Endpoint</text>
+    <text x="700" y="150" text-anchor="middle" font-size="9" fill="#64748b">RESTful 接口</text>
+
+    <!-- Layer 2 -->
+    <rect x="80" y="265" width="200" height="70" rx="6" fill="#0f172a" stroke="#34d399" stroke-width="1.5"/>
+    <text x="180" y="292" text-anchor="middle" font-size="12" fill="#34d399" font-weight="bold">Query Processor</text>
+    <text x="180" y="310" text-anchor="middle" font-size="9" fill="#64748b">查询解析与改写</text>
+
+    <rect x="340" y="265" width="200" height="70" rx="6" fill="#0f172a" stroke="#34d399" stroke-width="1.5"/>
+    <text x="440" y="292" text-anchor="middle" font-size="12" fill="#34d399" font-weight="bold">Context Builder</text>
+    <text x="440" y="310" text-anchor="middle" font-size="9" fill="#64748b">上下文构建</text>
+
+    <rect x="600" y="265" width="200" height="70" rx="6" fill="#0f172a" stroke="#34d399" stroke-width="1.5"/>
+    <text x="700" y="292" text-anchor="middle" font-size="12" fill="#34d399" font-weight="bold">Response Gen.</text>
+    <text x="700" y="310" text-anchor="middle" font-size="9" fill="#64748b">答案生成</text>
+
+    <!-- Layer 3 -->
+    <rect x="80" y="425" width="170" height="70" rx="6" fill="#0f172a" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="165" y="452" text-anchor="middle" font-size="12" fill="#a78bfa" font-weight="bold">Embedding</text>
+    <text x="165" y="470" text-anchor="middle" font-size="9" fill="#64748b">向量嵌入服务</text>
+
+    <rect x="290" y="425" width="170" height="70" rx="6" fill="#0f172a" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="375" y="452" text-anchor="middle" font-size="12" fill="#a78bfa" font-weight="bold">Vector DB</text>
+    <text x="375" y="470" text-anchor="middle" font-size="9" fill="#64748b">Milvus</text>
+
+    <rect x="500" y="425" width="170" height="70" rx="6" fill="#0f172a" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="585" y="452" text-anchor="middle" font-size="12" fill="#a78bfa" font-weight="bold">Reranker</text>
+    <text x="585" y="470" text-anchor="middle" font-size="9" fill="#64748b">重排序</text>
+
+    <rect x="710" y="425" width="170" height="70" rx="6" fill="#0f172a" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="795" y="452" text-anchor="middle" font-size="12" fill="#a78bfa" font-weight="bold">Hybrid Search</text>
+    <text x="795" y="470" text-anchor="middle" font-size="9" fill="#64748b">混合检索</text>
+
+    <!-- Layer 4 -->
+    <rect x="80" y="605" width="200" height="70" rx="6" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5"/>
+    <text x="180" y="632" text-anchor="middle" font-size="12" fill="#fbbf24" font-weight="bold">Document Parser</text>
+    <text x="180" y="650" text-anchor="middle" font-size="9" fill="#64748b">文档解析器</text>
+
+    <rect x="340" y="605" width="200" height="70" rx="6" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5"/>
+    <text x="440" y="632" text-anchor="middle" font-size="12" fill="#fbbf24" font-weight="bold">Chunk Manager</text>
+    <text x="440" y="650" text-anchor="middle" font-size="9" fill="#64748b">文本分块管理</text>
+
+    <rect x="600" y="605" width="200" height="70" rx="6" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5"/>
+    <text x="700" y="632" text-anchor="middle" font-size="12" fill="#fbbf24" font-weight="bold">Index Builder</text>
+    <text x="700" y="650" text-anchor="middle" font-size="9" fill="#64748b">索引构建</text>
+
+    <!-- Layer 5 -->
+    <rect x="80" y="765" width="200" height="70" rx="6" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="180" y="792" text-anchor="middle" font-size="12" fill="#94a3b8" font-weight="bold">LLM API Gateway</text>
+    <text x="180" y="810" text-anchor="middle" font-size="9" fill="#64748b">模型接口网关</text>
+
+    <rect x="340" y="765" width="200" height="70" rx="6" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="440" y="792" text-anchor="middle" font-size="12" fill="#94a3b8" font-weight="bold">Monitoring</text>
+    <text x="440" y="810" text-anchor="middle" font-size="9" fill="#64748b">监控与告警</text>
+
+    <rect x="600" y="765" width="200" height="70" rx="6" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="700" y="792" text-anchor="middle" font-size="12" fill="#94a3b8" font-weight="bold">Cache Layer</text>
+    <text x="700" y="810" text-anchor="middle" font-size="9" fill="#64748b">缓存层</text>
+
+    <!-- ============================================================ -->
+    <!-- LEGEND at bottom -->
+    <!-- ============================================================ -->
+    <rect x="40" y="890" width="880" height="40" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+
+    <rect x="65" y="900" width="12" height="12" rx="3" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+    <text x="83" y="911" font-size="10" fill="#94a3b8">前端接入层</text>
+
+    <rect x="175" y="900" width="12" height="12" rx="3" fill="#0f172a" stroke="#34d399" stroke-width="1.5"/>
+    <text x="193" y="911" font-size="10" fill="#94a3b8">应用编排层</text>
+
+    <rect x="285" y="900" width="12" height="12" rx="3" fill="#0f172a" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="303" y="911" font-size="10" fill="#94a3b8">检索增强层</text>
+
+    <rect x="395" y="900" width="12" height="12" rx="3" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5"/>
+    <text x="413" y="911" font-size="10" fill="#94a3b8">数据处理层</text>
+
+    <rect x="505" y="900" width="12" height="12" rx="3" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="523" y="911" font-size="10" fill="#94a3b8">基础设施</text>
+
+    <!-- Arrow legend -->
+    <line x1="620" y1="906" x2="650" y2="906" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="660" y="911" font-size="10" fill="#94a3b8">调用关系</text>
+
+    <!-- ============================================================ -->
+    <!-- INFO CARDS at bottom -->
+    <!-- ============================================================ -->
+    <rect x="40" y="950" width="280" height="100" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <rect x="40" y="950" width="280" height="26" rx="8" fill="#1e293b"/>
+    <rect x="40" y="966" width="280" height="10" fill="#1e293b"/>
+    <text x="180" y="969" text-anchor="middle" font-size="10" fill="#e2e8f0" font-weight="bold">检索策略</text>
+    <text x="60" y="993" font-size="9" fill="#64748b">• 稠密向量检索（Dense）</text>
+    <text x="60" y="1008" font-size="9" fill="#64748b">• 稀疏关键词检索（Sparse）</text>
+    <text x="60" y="1023" font-size="9" fill="#64748b">• 混合检索（Hybrid）</text>
+    <text x="60" y="1038" font-size="9" fill="#64748b">• 重排序 Rerank</text>
+
+    <rect x="340" y="950" width="280" height="100" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <rect x="340" y="950" width="280" height="26" rx="8" fill="#1e293b"/>
+    <rect x="340" y="966" width="280" height="10" fill="#1e293b"/>
+    <text x="480" y="969" text-anchor="middle" font-size="10" fill="#e2e8f0" font-weight="bold">支持的格式</text>
+    <text x="360" y="993" font-size="9" fill="#64748b">• 文本文档（TXT, MD）</text>
+    <text x="360" y="1008" font-size="9" fill="#64748b">• PDF 文档</text>
+    <text x="360" y="1023" font-size="9" fill="#64748b">• Office 文档（DOCX, PPTX）</text>
+    <text x="360" y="1038" font-size="9" fill="#64748b">• 代码文件</text>
+
+    <rect x="640" y="950" width="280" height="100" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+    <rect x="640" y="950" width="280" height="26" rx="8" fill="#1e293b"/>
+    <rect x="640" y="966" width="280" height="10" fill="#1e293b"/>
+    <text x="780" y="969" text-anchor="middle" font-size="10" fill="#e2e8f0" font-weight="bold">部署模式</text>
+    <text x="660" y="993" font-size="9" fill="#64748b">• 私有化部署</text>
+    <text x="660" y="1008" font-size="9" fill="#64748b">• 云端部署</text>
+    <text x="660" y="1023" font-size="9" fill="#64748b">• 混合部署</text>
+    <text x="660" y="1038" font-size="9" fill="#64748b">• 边缘节点</text>
+
+    <!-- Footer -->
+    <text x="480" y="1075" text-anchor="middle" font-size="8" fill="#334155">RAG Knowledge Base System Architecture</text>
+  </svg>
+</div>
+</body>
+</html>
