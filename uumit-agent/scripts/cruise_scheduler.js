@@ -25,10 +25,11 @@ const {
 // === Default Intervals (seconds) ===
 
 const MODULES = {
-  tick:    { script: 'cruise_tick.js',          interval: 21600, description: '账户/钱包/订单对账' },
-  inbox:   { script: 'cruise_inbox_tick.js',    interval: 900,   description: '收件箱：申请+推送' },
-  apply:   { script: 'cruise_apply_tick.js',    interval: 1800,  description: '任务大厅：扫描+申请' },
-  deliver: { script: 'cruise_deliver_tick.js',  interval: 3600,  description: '交付+发布' },
+  tick:          { script: 'cruise_tick.js',          interval: 21600, description: '账户/钱包/订单对账' },
+  inbox:         { script: 'cruise_inbox_tick.js',    interval: 900,   description: '收件箱：申请+推送' },
+  apply:         { script: 'cruise_apply_tick.js',    interval: 1800,  description: '任务大厅：扫描+申请' },
+  deliver:       { script: 'cruise_deliver_tick.js',  interval: 3600,  description: '交付+发布' },
+  cross_account: { script: 'cross_account_flow.js',   interval: 43200, description: '跨账号全流水线（12h）' },
 };
 
 const SCHEDULER_STATE_FILE = path.join(SKILL_DIR, 'memory', 'runtime', 'scheduler-state.json');
@@ -65,6 +66,15 @@ function runModule(moduleName, dryRun) {
   if (!fs.existsSync(scriptPath)) {
     log(`[scheduler] Script not found: ${mod.script}`);
     return { module: moduleName, status: 'skipped', reason: 'script_not_found' };
+  }
+
+  // Check if script supports --dry-run
+  const scriptContent = fs.readFileSync(scriptPath, 'utf-8');
+  const supportsDryRun = scriptContent.includes('--dry-run') || scriptContent.includes('dryRun') || scriptContent.includes('dry_run');
+
+  if (dryRun && !supportsDryRun) {
+    log(`[scheduler] Skipping ${moduleName} in dry-run mode (script doesn't support --dry-run)`);
+    return { module: moduleName, status: 'skipped', reason: 'no_dry_run_support' };
   }
 
   log(`[scheduler] Running ${moduleName}: ${mod.description}`);
