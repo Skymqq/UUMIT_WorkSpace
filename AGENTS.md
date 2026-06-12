@@ -1,222 +1,215 @@
 # UUMit Workspace
 
-Three portable AI agent skill packages for the [UUMit](https://m.uumit.com) platform — a Chinese marketplace where agents can query data APIs, complete paid tasks, publish digital assets, register interoperable capabilities, and earn UT currency.
+UUMit 平台智能体工作区 — 3个账号自动化赚钱系统。
 
-## Repo structure
-
-```
-uumit-agent/          # Main skill: gateway to all UUMit features (entrypoint: SKILL.md)
-uumit-mcp-deployer/   # MCP Server development & deployment skill
-uumit-prompt-engineer/ # AI prompt engineering skill
-scripts/              # Empty — skills self-contain their own scripts
-*.md (root)           # Knowledge products publishable to UUMit store (see "Publishable assets")
-tmp_*.py              # Ad-hoc Python scripts — NOT part of the skill system, use at own risk
-```
-
-## Architecture
-
-- **Runtime**: Node.js >=18, no npm packages (everything is vanilla JS)
-- **API**: REST via `uumit-agent/scripts/rest_request.js` against `https://api.uumit.com`
-- **Auth**: `X-Api-Key` + `X-Platform-User-Id` headers (stored in `memory/uumit-auth.json`)
-- **Entrypoint**: `uumit-agent/SKILL.md` — the primary instruction file (~450 lines)
-- **Update**: `update_skill.js --check` / `--update`, validated via `manifest.json` SHA256
-
-## Critical gotchas
-
-### Writing JSON payloads
-**ALWAYS** use `[System.IO.File]::WriteAllText(path, body, [System.Text.UTF8Encoding]::new($false))` in PowerShell. `Set-Content` may insert a UTF-8 BOM that breaks `rest_request.js` JSON parsing.
+## 目录结构
 
 ```
-$body = '{...}'
-[System.IO.File]::WriteAllText(
-  "$env:UUMIT_SKILL_DIR\memory\sessions\$session\request-task.json",
-  $body,
-  [System.Text.UTF8Encoding]::new($false)
-)
+UUMIT_WorkSpace/
+├── AGENTS.md                    # 本文件：智能体执行规范
+├── products/                    # 知识产品（上架到 UUMit 知识商店）
+│   ├── Python自动化赚钱脚本合集.md
+│   ├── AI编程助手实战手册.md
+│   ├── 开发者AI Prompt宝库.md
+│   ├── MCP Server 从零入门到部署实战.md
+│   ├── prompt-engineering-advanced.md
+│   ├── ai-side-hustle-guide.md
+│   └── ai-api-integration-guide.md
+├── tools/                       # 工具脚本（非 Skill 系统）
+│   ├── prompt_to_skill/         # Prompt 转 Skill 工具
+│   ├── sales_data_processor.py  # 数据处理脚本
+│   └── prompt_to_skill_deliverable.tar.gz
+├── uumit-agent/                 # 主 Skill（入口：SKILL.md）
+│   ├── SKILL.md                 # 主指令文件
+│   ├── API_REFERENCE.md         # API 接口文档
+│   ├── PLAYBOOKS.md             # 业务流程手册
+│   ├── SAFETY.md                # 安全规则
+│   ├── DEEP_LINKS.md            # 深链接
+│   ├── scripts/                 # 所有脚本
+│   │   ├── rest_request.js      # REST 调用入口
+│   │   ├── auth.js              # 认证
+│   │   ├── auth_common.js       # 多账号认证
+│   │   ├── uumit_earn.js        # 一键赚钱脚本
+│   │   ├── cross_account_flow.js # 跨账号流水线
+│   │   ├── cruise_*.js          # 巡航脚本（4个）
+│   │   ├── upload_file.js       # 文件上传
+│   │   └── ...
+│   └── memory/                  # 运行时数据（不入 git）
+│       ├── uumit-auth.json      # 多账号凭证
+│       ├── uumit-state.json     # 状态快照
+│       ├── pending_skills.json  # 待发布技能
+│       └── runtime/             # 巡航和自动化状态
+├── uumit-mcp-deployer/          # 子 Skill：MCP Server 开发
+├── uumit-prompt-engineer/       # 子 Skill：Prompt 工程
+└── uumit-assets/                # 已发布的资产文件
 ```
 
-### Session-isolated request files
-- Each session gets its own dir: `memory/sessions/<SESSION_ID>/`
-- Never reuse `memory/request.json` (deprecated)
-- Write payloads: `request-task.json`, `request-asset.json`, `request-delivery.json`, etc.
-- ALWAYS pass absolute paths to `--file`
+## 环境约定
 
-### REST API rules
-- GET params: `--param KEY VALUE` (handles encoding automatically)
-- Write operations: PUT body in session file → `--file <path>` (never inline JSON)
-- Always `--dry-run` before real write
-- Use `--idempotency-key` for all risky writes
-- Only call routes in `API_REFERENCE.md` allowlist
-- 422 = fix payload fields, don't retry blindly
-- 5xx = exponential backoff max 3
-
-### Knowledge Store (two-step publish)
-1. `upload_file.js <local_path>` → returns `data.filename` (storage_key)
-2. `POST /api/v1/digital-assets/quick-upload` with `storage_key`, `file_name`, `file_size`, `file_type`, `price_ut`
-- Upload alone does NOT create a store listing
-
-### Agent output rules
-- Parse JSON from script stdout internally
-- NEVER paste raw stdout/stderr/tool blocks to user
-- Summarize: result + 1-3 key fields + link
-- Exception: `verification_url` + `user_code` can be shown
-
-### JWT-only features (not available via API Key)
-- 签到 (check-in), 翻牌 (card flip), 时间胶囊 (time capsule)
-- Guide user to `https://m.uumit.com/hall`
-
-### Cruise system (4 independent ticks)
-| Script | Interval | Purpose |
-|--------|----------|---------|
-| `cruise_tick.js` | 6h | Account/wallet/order reconciliation |
-| `cruise_inbox_tick.js` | 15min | Check applications to your tasks + platform pushes |
-| `cruise_apply_tick.js` | 30min | Browse task hall, skill-match, auto-apply |
-| `cruise_deliver_tick.js` | 60min | Deliver accepted work + publish pending assets |
-`cruise_work_tick.js` is **deprecated** — never use it.
-
-### Autonomy (L4)
-Config in `memory/runtime/agent-autonomy-config.json`:
-- Auto-spend: ≤100 UT (data API calls + store purchases)
-- Auto-accept jobs: ≤1000 UT via SSE
-- Auto-apply: enabled, no confirm, max 9999 UT bounty
-- Auto-review applications: enabled (skill match + reputation)
-- Auto-deliver: enabled (if agent can self-complete)
-
-### Exchange rate
-- 1 CNY = 100 UT (cash_to_ut_rate)
-- Withdrawal: 1 UT = 0.007 CNY
-- Agent tasks MUST use `bounty_currency: "UT"`, never CNY directly
-
-## Key skills
-
-3 skills registered on UUMit (10 UT fixed each):
-- Python 脚本开发与技术支持 (`1c9ff94a-...`)
-- AI Prompt 工程优化 (`018f37d6-...`)
-- MCP Server 开发部署 (`51450c23-...`)
-
-## Sub-skills
-
-- `uumit-mcp-deployer/`: SKILL.md for building & deploying MCP servers (FastMCP, Docker, cloud)
-- `uumit-prompt-engineer/`: SKILL.md for prompt engineering consulting (200+ templates methodology)
-
-## Publishable assets
-
-Root-level `.md` files are knowledge products for the UUMit store. Do NOT delete or rename without confirming intent. Known products:
-- `Python自动化赚钱脚本合集.md`
-- `AI编程助手实战手册.md`
-- `开发者AI Prompt宝库.md`
-- `MCP Server 从零入门到部署实战.md`
-- `prompt-engineering-advanced.md`
-- `ai-side-hustle-guide.md`
-
-## Verification
-
-```
-$env:UUMIT_SKILL_DIR="D:\mqq\develop\UUMIT_WorkSpace\uumit-agent"
-node "$env:UUMIT_SKILL_DIR\scripts\validate_skill.js"
-node "$env:UUMIT_SKILL_DIR\scripts\rest_request.js" GET /api/v1/wallet
-```
-
-## Auth Profiles (multi-account)
-
-Multi-profile auth system: `scripts/auth.js` and `scripts/auth_common.js`.
-
-| Command | Purpose |
-|---------|---------|
-| `--start` | Device OAuth login, defaults to `default` profile |
-| `--start --save-as <name>` | Save credentials under named profile |
-| `--wait` | Poll pending auth session |
-| `--check` | Validate current profile, wallet, cruise status |
-| `--list` | List all saved profiles with active marker |
-| `--switch <name>` | Switch active profile instantly, no re-auth |
-| `--delete <name>` | Remove a saved profile |
-
-### Profile data
-- Stored: `memory/uumit-auth.json` — `{ current, profiles: { name: { cached_api_key, cached_user_id, updated_at } } }`
-- `--check` returns `current_profile`, wallet balance, cruise registration status, and post-auth onboarding
-- Switching is instant (changes `current` field + `process.env`)
-
-### Adding a new account
-```
-node scripts/auth.js --start --save-as <name>
-```
-Complete device auth in browser. Then `--switch <name>` to activate.
-
-## Registered Accounts
-
-3 accounts registered in `memory/uumit-auth.json`:
-
-| Profile | User ID | API Key (preview) |
-|---------|---------|-------------------|
-| `阿强` | `4e3941ba-22be-406a-8575-d9cb8a13eb87` | `dqXoUpBB94...` |
-| `阿星` | `65c2be88-f1f3-4cb7-b556-7d3758132877` | `PYLJGdbI3P4...` |
-| `硬核逐风者` | `67dd1391-253e-4e46-9f4d-a6494abf4cd5` | `yQUY2doiWT8...` |
-
-### Per-account skills
-
-**阿强** (publisher/worker):
-| Skill ID | Name | Price |
-|----------|------|-------|
-| `98364b8d-...` | Python自动化脚本定制 | 50 UT |
-| `83edc879-...` | Python自动化脚本定制(dup) | 50 UT |
-| `51450c23-...` | MCP Server 开发部署 | 10 UT |
-| `018f37d6-...` | AI Prompt 工程优化 | 10 UT |
-| `1c9ff94a-...` | Python 脚本开发与技术支持 | 100 UT |
-
-**阿星** (publisher/worker):
-| Skill ID | Name | Price |
-|----------|------|-------|
-| `f411f89f-...` | MCP Server 开发部署 | 50 UT |
-| `fd5a0a07-...` | AI Prompt 工程优化 | 50 UT |
-| `224ad819-...` | Python 脚本开发与技术支持 | 50 UT |
-| `fe935266-...` | 专业内容创作与写作服务 | 50 UT |
-
-**硬核逐风者** (publisher/worker):
-| Skill ID | Name | Price |
-|----------|------|-------|
-| `b1c26339-...` | 数据清洗与ETL自动化服务 | 150 UT |
-| `8d77d836-...` | AI代码审查与质量优化 | 200 UT |
-| `ee3b3e17-...` | AI工作流自动化搭建服务 | 350 UT |
-| `66b31b30-...` | MCP Server快速开发服务 | 300 UT |
-| `59be0fb7-...` | 电商运营数据分析与优化 | 130 UT |
-| `e40cf8ea-...` | AI数据分析报告生成 | 200 UT |
-
-## Cross-Account Automation
-
-Script: `uumit-agent/scripts/cross_account_flow.js`
-
-一键完成3个账号之间的任务发布→申请→同意→交付→确认→评分全流程。
-
-### Flow definition
-
-| # | Publisher → Worker | Task | Bounty |
-|---|-------------------|------|--------|
-| 1 | `阿星` → `硬核逐风者` | Python数据处理脚本开发 | 200 UT |
-| 2 | `硬核逐风者` → `阿星` | Web应用自动化测试 | 200 UT |
-| 3 | `硬核逐风者` → `阿强` | 技术文档翻译与整理 | 100 UT |
-
-### Per-flow 6-step process
-
-1. Publisher `POST /api/v1/tasks` — create task
-2. Worker `POST /api/v1/tasks/{id}/applications` — apply (uses worker's skill_id)
-3. Publisher `POST /api/v1/tasks/{id}/applications/{app_id}/accept` — accept
-4. Worker: upload file via `upload_file.js` → `POST /api/v1/orders/{order_id}/deliverables` — deliver
-5. Publisher `POST /api/v1/orders/{order_id}/confirm` — confirm receipt
-6. Publisher `POST /api/v1/orders/{order_id}/rating` — 5-star rating
-
-### Account switching
-
-The script uses `auth_common.getProfileCredentials(name)` to read credentials by profile name and sets `UUMIT_API_KEY` + `UUMIT_USER_ID` env vars per request — no global auth switch needed.
-
-### Run
+### 环境变量
 
 ```powershell
-$env:UUMIT_SKILL_DIR="D:\mqq\develop\UUMIT_WorkSpace\uumit-agent"
-node "$env:UUMIT_SKILL_DIR\scripts\cross_account_flow.js"
+$env:UUMIT_SKILL_DIR = "D:\mqq\develop\UUMIT_WorkSpace\uumit-agent"
+$env:UUMIT_BASE_URL = "https://api.uumit.com"
 ```
 
-### Wallet requirements
+### Shell 约定
 
-Ensure each publisher has enough available UT balance before running:
-- 阿星: ≥ 200 UT available
-- 硬核逐风者: ≥ 300 UT available (200 + 100 as publisher)
+- **所有 Node 命令**必须先设置 `$env:UUMIT_SKILL_DIR`
+- **写 JSON 文件**必须用 `[System.IO.File]::WriteAllText(path, body, [System.Text.UTF8Encoding]::new($false))`，禁止用 `Set-Content`（会加 BOM）
+- **REST 调用**统一用 `node scripts/rest_request.js METHOD PATH`
+- **GET 参数**用 `--param KEY VALUE`
+- **POST/PUT body**写入会话隔离文件，用 `--file <绝对路径>`
+- **写操作前**必须 `--dry-run`
+- **幂等操作**必须 `--idempotency-key`
+
+### 文件命名规范
+
+| 文件类型 | 命名模式 | 位置 |
+|---------|---------|------|
+| REST 请求体 | `request-{用途}.json` | `memory/sessions/{SESSION_ID}/` |
+| 巡航状态 | `cruise-state.json` | `memory/` |
+| 运行时配置 | `*-config.json` | `memory/runtime/` |
+| 待发布内容 | `pending-*.json` | `memory/` |
+| 临时脚本 | 禁止 | 根目录不放临时文件 |
+
+### 会话隔离
+
+每个 Agent 会话必须有独立 `SESSION_ID`，所有写请求放在 `memory/sessions/{SESSION_ID}/`：
+- `request-task.json` — 任务创建/申请
+- `request-asset.json` — 知识商店/议价
+- `request-delivery.json` — 交付
+- `request-profile.json` — 资料修改
+- `request-marketplace.json` — 数据广场
+
+## 账号体系
+
+3 个注册账号，凭证在 `memory/uumit-auth.json`：
+
+| 账号 | 角色 | 技能数 | 主要定位 |
+|------|------|--------|---------|
+| `硬核逐风者` | 主力 | 41 | 技术开发/数据分析/AI工具 |
+| `阿星` | 辅助 | 4 | 内容创作/MCP/Prompt |
+| `阿强` | 辅助 | 5 | Python开发/文档翻译 |
+
+### 多账号操作
+
+```powershell
+# 切换账号
+node scripts/auth.js --switch <name>
+
+# 查看所有账号
+node scripts/auth.js --list
+
+# 跨账号流水线（自动切换）
+node scripts/cross_account_flow.js
+```
+
+## 自动化系统
+
+### 一键赚钱脚本
+
+```powershell
+node scripts/uumit_earn.js --status      # 查看状态
+node scripts/uumit_earn.js --scan-only   # 扫描匹配任务
+node scripts/uumit_earn.js --dry-run     # 模拟申请
+node scripts/uumit_earn.js               # 自动申请
+```
+
+### 巡航系统（4 个独立 cron）
+
+| 脚本 | 间隔 | 职责 |
+|------|------|------|
+| `cruise_tick.js` | 6h | 账户/钱包/订单对账 |
+| `cruise_inbox_tick.js` | 15min | 收件箱：申请+推送 |
+| `cruise_apply_tick.js` | 30min | 任务大厅：扫描+申请 |
+| `cruise_deliver_tick.js` | 60min | 交付+发布 |
+
+### 跨账号全流水线
+
+```powershell
+node scripts/cross_account_flow.js
+```
+
+6 条路线（3 账号 × 2 方向）：
+1. 阿星 → 硬核逐风者 (200 UT)
+2. 硬核逐风者 → 阿星 (200 UT)
+3. 硬核逐风者 → 阿强 (100 UT)
+4. 阿强 → 阿星 (150 UT)
+5. 阿强 → 硬核逐风者 (180 UT)
+6. 阿星 → 阿强 (120 UT)
+
+## 知识产品管理
+
+### 上架流程（两步）
+
+1. `upload_file.js <path>` → 获取 `storage_key`
+2. `POST /api/v1/digital-assets/quick-upload` → 创建资产
+
+### 产品清单
+
+| 文件 | 状态 |
+|------|------|
+| `products/Python自动化赚钱脚本合集.md` | 待上架 |
+| `products/AI编程助手实战手册.md` | 待上架 |
+| `products/开发者AI Prompt宝库.md` | 待上架 |
+| `products/MCP Server 从零入门到部署实战.md` | 待上架 |
+| `products/prompt-engineering-advanced.md` | 待上架 |
+| `products/ai-side-hustle-guide.md` | 待上架 |
+| `products/ai-api-integration-guide.md` | 待上架 |
+
+## 技能管理
+
+### 待发布技能（明日可发）
+
+保存在 `memory/pending_skills.json`，今日 10 次上限已用完：
+
+| 技能 | 定价 |
+|------|------|
+| SEO优化与搜索引擎排名提升 | 200 UT |
+| 商业计划书与BP撰写 | 300 UT |
+| 第三方API对接与系统集成 | 250 UT |
+| 数据可视化与BI看板制作 | 280 UT |
+| 自动化测试与质量保障 | 220 UT |
+
+### 已注册技能（硬核逐风者，41个）
+
+高价值技能（≥150 UT）：
+- MCP Server 定制开发 (400 UT)
+- AI工作流自动化搭建 (350 UT)
+- 复古像素画 (300 UT)
+- AI内容批量生成工作流 (320 UT)
+- 手绘风架构图 (250 UT)
+- Python数据采集与RPA (260 UT)
+- AI Prompt工程化 (280 UT)
+- MCP Server快速开发 (300 UT)
+- AI代码审查 (200 UT)
+- 数据清洗与ETL (150 UT)
+- 科研数据分析 (180 UT)
+- 学术论文润色 (180 UT)
+- 数据可视化/BI看板 (280 UT)
+
+## 安全规则
+
+1. **禁止**在 git 中提交凭证、API Key、密码
+2. **禁止**把本地文件/密钥注册为对外 capability
+3. **写操作前**必须 `--dry-run`
+4. **超阈值消费**（>100 UT）必须用户确认
+5. **任务币种**必须用 `UT`，禁止用 `CNY`
+6. **JWT-only 功能**（签到/翻牌/时间胶囊）引导用户到 App
+
+## 验证命令
+
+```powershell
+# 验证 Skill 完整性
+node "$env:UUMIT_SKILL_DIR\scripts\validate_skill.js"
+
+# 检查钱包
+node "$env:UUMIT_SKILL_DIR\scripts\rest_request.js" GET /api/v1/wallet
+
+# 检查技能列表
+node "$env:UUMIT_SKILL_DIR\scripts\rest_request.js" GET /api/v1/skills
+
+# 检查任务大厅
+node "$env:UUMIT_SKILL_DIR\scripts\rest_request.js" GET /api/v1/tasks/hall --param page 1 --param page_size 5
+```

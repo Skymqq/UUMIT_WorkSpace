@@ -1,10 +1,15 @@
-# UUMit runtime data
+# UUMit runtime data (凭证、状态、会话)
 uumit-agent/memory/runtime/
 uumit-agent/memory/sessions/
+uumit-agent/memory/uumit-auth.json
+uumit-agent/memory/uumit-state.json
+uumit-agent/memory/cruise-state.json
+uumit-agent/memory/toku-*.json
+uumit-agent/memory/pending_skills.json
 uumit-agent/memory/*.tmp
-uumit-agent/memory/stderr*.tmp
-uumit-agent/memory/stdout*.tmp
-uumit-agent/memory/tmp_*
+
+# Tools (local scripts, not part of skill system)
+tools/
 
 # Logs
 *.log
@@ -21,4 +26,6 @@ __pycache__/
 *.pyc
 venv/
 
+# Archive
 state.db
+*.tar.gz

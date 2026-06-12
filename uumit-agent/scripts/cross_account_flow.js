@@ -86,6 +86,7 @@ function createDeliverableFile(content, fileName, profileName) {
 }
 
 const flows = [
+  // === 6 全组合流水线 (3账号 × 2方向) ===
   {
     publisher: '阿星',
     worker: '硬核逐风者',
@@ -124,6 +125,46 @@ const flows = [
     workerSkillId: '1c9ff94a-86c7-45fa-8a0e-96d3feb10471',
     deliverableFile: 'api_docs_zh.md',
     deliverableContent: '# API 技术文档（中文翻译）\n\n## 概述\n本文档翻译自英文原版 API 文档。\n\n## 认证\n使用 API Key 进行认证，在请求头中添加 `Authorization: Bearer <token>`。\n\n## 端点\n- `GET /api/v1/users` - 获取用户列表\n- `POST /api/v1/users` - 创建新用户',
+  },
+  // === 新增3条：阿强→阿星, 阿强→硬核逐风者, 阿星→阿强 ===
+  {
+    publisher: '阿强',
+    worker: '阿星',
+    task: {
+      title: 'AI Prompt结构化设计',
+      description: '为AI客服系统设计结构化System Prompt，包含角色定义、规则约束、输出格式和多轮对话流程。',
+      mode: 'online', billing_model: 'fixed_deadline',
+      bounty_amount: '150', bounty_currency: 'UT', delivery_hours: 48,
+    },
+    workerSkillId: 'fd5a0a07-7a0b-4c63-9f7a-8d8e9f0a1b2c',
+    deliverableFile: 'ai_prompt_design.md',
+    deliverableContent: '# AI客服System Prompt设计\n\n## 角色定义\n你是一个专业的客服助手...\n\n## 规则约束\n1. 保持礼貌和专业\n2. 不透露内部信息\n3. 无法解答时转人工\n\n## 输出格式\nJSON格式返回：{"intent":"...","response":"...","escalate":false}',
+  },
+  {
+    publisher: '阿强',
+    worker: '硬核逐风者',
+    task: {
+      title: '数据分析自动化脚本',
+      description: '开发Python数据分析自动化脚本，支持Excel/CSV数据读取、清洗、统计分析和图表生成。',
+      mode: 'online', billing_model: 'fixed_deadline',
+      bounty_amount: '180', bounty_currency: 'UT', delivery_hours: 48,
+    },
+    workerSkillId: 'b1c26339-4954-4c73-b7e6-ae315994d6e8',
+    deliverableFile: 'data_analyzer.py',
+    deliverableContent: '#!/usr/bin/env python3\n# Data Analyzer\nimport pandas as pd\nimport matplotlib.pyplot as plt\nimport sys\n\ndef analyze(file_path):\n    df = pd.read_excel(file_path) if file_path.endswith(".xlsx") else pd.read_csv(file_path)\n    print(f"Rows: {len(df)}, Columns: {len(df.columns)}")\n    print(df.describe())\n    df.hist(figsize=(12,8))\n    plt.savefig("analysis.png")\n    print("Chart saved to analysis.png")\n\nif __name__ == "__main__":\n    analyze(sys.argv[1])',
+  },
+  {
+    publisher: '阿星',
+    worker: '阿强',
+    task: {
+      title: '技术博客文章撰写',
+      description: '撰写一篇关于AI Agent技术趋势的技术博客文章，约2000字，含代码示例和架构图描述。',
+      mode: 'online', billing_model: 'fixed_deadline',
+      bounty_amount: '120', bounty_currency: 'UT', delivery_hours: 48,
+    },
+    workerSkillId: '1c9ff94a-86c7-45fa-8a0e-96d3feb10471',
+    deliverableFile: 'ai_agent_blog.md',
+    deliverableContent: '# AI Agent技术趋势：2026年展望\n\n## 引言\n随着大语言模型的快速发展，AI Agent正从概念走向落地...\n\n## 核心技术栈\n- LLM推理引擎\n- 工具调用框架\n- 记忆与状态管理\n\n## 代码示例\n```python\nfrom langchain.agents import initialize_agent\nagent = initialize_agent(tools, llm, agent="zero-shot-react-description")\n```\n\n## 未来展望\n多Agent协作将成为主流...',
   },
 ];
 
